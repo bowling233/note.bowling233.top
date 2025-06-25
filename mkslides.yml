@@ -1,0 +1,16 @@
+index:
+    title: bowling233's slides
+    favicon: docs/assets/bowling.svg
+    theme: slides/style/index.css
+    #template: slides/style/index.jinja
+slides:
+    favicon: docs/assets/bowling.svg
+    theme: slides/style/slides-zh-white.css
+    highlight_theme: vs
+revealjs:
+    history: true
+    slideNumber: c/t
+plugins:
+    - name: RevealMermaid
+      extra_javascript:
+          - https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin/plugin/mermaid/mermaid.min.js

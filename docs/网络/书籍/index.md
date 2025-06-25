@@ -1,0 +1,24 @@
+# 各书籍基于的 Linux 版本
+
+- 网络：
+    - Linux iptables Pocket Reference: Firewalls, NAT & Accounting
+        - 2004 年出版，作者说明了本书基于 Linux 2.6。
+        - 93 页，简短的书籍。内容稍显过时（iptables 有一些新增的内容）。
+    - Understanding Linux Network Internals
+        - 2006 年出版，作者没有明确说明，但内容最多描述到 Linux 2.6。
+        - 1064 页。描述的内容非常详细且底层，主要包含几个专题：硬件（包含驱动）、桥接、IPv4 和路由。
+    - TCP/IP Illustrated, Volume 2: The Implementation
+        - 2008 年出版，作者说明了本书基于 BSD 4.4。这部分代码的时间为 1994，与 Linux 同源。
+        - 1194 页。
+    - Linux Kernel Networking - Implementation and Theory
+        - 2013 年出版，作者说明了本书基于 Linux 3.9。
+        - 636 页。内容更丰富些，包含了 IPv6、无线网络和 InfiniBand。
+        - 中文版书名为：精通 Linux 内核网络。
+    - LINUX 网络编程 第 2 版
+        - 2014 年出版，作者说明了本书基于 Linux 2.6。
+        - 713 页。分为三个部分：Linux 基础、用户层（TCP 和套接字）、内核（netfilter）。
+    - Linux Firewalls: Enhancing Security with nftables and Beyond: Enhancing Security with nftables and Beyond (4th Edition)
+        - 2015 年，作者没有明确说明，但包含 nftables 说明至少在 3.13 之后。
+        - 425 页。
+        - 中文版书名为：Linux 防火墙 第 4 版。
+    - 一些较新的书籍往往不再关心 Linux 内部底层的网络实现，主要是讲解在 Linux 系统上配置各项网络服务。这些软件支持的服务并不适合看书籍学习，因为软件发展得更快，阅读文档更为实用。

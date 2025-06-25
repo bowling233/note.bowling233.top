@@ -1,0 +1,133 @@
+# Project information
+site_name: Bowling's TechStack
+site_url: https://note.bowling233.top
+repo_url: https://github.com/bowling233/TechStack
+repo_name: TechStack
+edit_uri: blob/master/docs/
+site_description: Bowling 的笔记本
+site_author: Bowling
+copyright: <a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备2022036274号-1</a>
+
+# Material
+markdown_extensions:
+  # Admonition
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+  # Mermaid
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  # Code Block
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  # Tab
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  # Grid, Image
+  - attr_list
+  - md_in_html
+  # Icon
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # List
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # TOC
+  - toc:
+      permalink: true
+      # toc_depth: 3
+  # MathJax
+  - pymdownx.arithmatex:
+      generic: true
+  # Keys
+  - pymdownx.keys
+  # Not Standard
+  - neoteroi.cards
+
+extra:
+  social:
+    - icon: material/home-circle
+      link: https://bowling233.com
+extra_javascript:
+  # MathJax
+  - javascripts/mathjax.js
+  - https://polyfill.alicdn.com/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  # Table Sort
+  - https://unpkg.com/tablesort/dist/tablesort.min.js
+  - javascripts/tablesort.js
+  # mermaid
+  - https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js
+extra_css:
+  - stylesheets/font.css
+  - stylesheets/flink.css
+  - stylesheets/neoteroi-mkdocs.css
+  - stylesheets/custom.css
+  - https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css
+  - https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css
+  - https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css
+  - https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css
+
+# Build directories
+theme:
+  name: material
+  logo: assets/bowling.svg
+  favicon: assets/bowling.svg
+  features:
+    # 代码块操作
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    # 底部导航
+    - navigation.footer
+    # 顶部导航
+    - navigation.tabs
+    # 侧边栏按 section 展开
+    - navigation.sections
+    - navigation.expand
+    # 章节首页
+    - navigation.indexes
+    # 锚点
+    - navigation.tracking
+    # 路径
+    - navigation.path
+    # 回到顶部
+    - navigation.top
+    - toc.follow
+    # 页面编辑
+    - content.action.edit
+    # 搜索
+    - search.suggest
+    - search.highlight
+    - search.share
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# Plugins
+plugins:
+  - tags
+  - search
+  - glightbox
+  - git-revision-date-localized
+  - drawio

@@ -1,0 +1,26 @@
+# Located at the project root
+root = true
+# Base settings for most files
+[*]
+charset = utf-8
+end_of_line = lf
+
+# Linux Kernel Style
+[*.{c,h,cpp}]
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+# General 4-space files
+[*.{py,json}]
+indent_style = space
+indent_size = 4
+# General 2-space files
+[*.{yaml,clang-format}]
+indent_style = space
+indent_size = 2
+[*.md]
+indent_style = space
+indent_size = 4
+[Makefile]
+indent_style = tab

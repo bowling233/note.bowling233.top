@@ -140,6 +140,23 @@ $$
 
 ### 并行策略
 
+#### EP
+
+专家并行（Expert Parallelism, EP）：将模型中的专家（Expert）分布到不同设备（GPU）上。
+
+Token路由：每个输入Token会被动态分配到最相关的专家（如top-1或top-2）。
+
+两个阶段：
+
+- Dispatch（调度阶段）：将输入Token分发给对应的专家。
+    - 路由计算：根据Token特征计算其与所有专家的匹配分数。
+    - Top-K选择：选出分数最高的K个专家（如top-2）。
+    - 跨设备发送：若目标专家在其他机器，需通过RDMA/NVLink发送Token数据。
+- Combine（组合阶段）：聚合专家计算结果并输出。
+    - 专家计算：各专家处理接收到的Token。
+    - 结果回传：将计算结果发回Token原属设备（可能跨机）。
+    - 加权融合：按路由分数加权求和多个专家的输出。
+
 ### KV Cache
 
 仅编码器模型的 Self Attention 中带 Masked ，因此，在推理的时候，前面已经生成的 Token 不需要与后面的 Token 产生 Attention ，从而使得前面已经计算的 K 和 V 可以缓存起来。因此，KV Cache 应运而生。

@@ -376,3 +376,8 @@ transformed_ciifar10 = datasets.CIFAR10(
     ]))
 ```
 
+## 书本外的知识
+
+### 分布式训练
+
+https://docs.pytorch.org/tutorials/beginner/dist_overview.html

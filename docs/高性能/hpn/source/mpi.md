@@ -1,5 +1,17 @@
 # MPI
 
+OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表对比了常见的 MPI 实现。
+
+| 对比项 | OpenMPI | MVAPICH | Intel MPI | MPICH ||
+| - | - | - | - | - | - |
+| 历史 | [History of Open MPI](https://docs.open-mpi.org/en/main/history.html)<br>2003<br>由 OSU、LANL、UTK 的 MPI 实现合并而来 | [mug15-overview_of_the_mvapich_project-dk_panda.pdf](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/2015/mug15-overview_of_the_mvapich_project-dk_panda.pdf)<br>2002<br>OSU 开发，衍生自 MPICH | （来自 Wikipedia）衍生自 MPICH | [MPICH Overview](https://www.mpich.org/about/overview/)<br>2001<br>由 ANL 和 MSU 开发 | |
+| 文档 | [Open MPI main documentation](https://docs.open-mpi.org/en/main/) | [MVAPICH :: UserGuide](http://mvapich.cse.ohio-state.edu/userguide/) | [Intel® MPI Library Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html) | [Guides \| MPICH](https://www.mpich.org/documentation/guides/) | |
+| mpirun 指向 | `prun`(v5.x)<br>`orterun`(v4.x) | `mpiexec.hydra`<br>`mpiexec.mpirun_rsh`（推荐） | `mpiexec.hydra` | hydra（默认）<br>gforker（编译选项） ||
+| Host 选项 | <pre>-H/--host node1:1,node1:1<br>--hostfile hf</pre> | <pre>-np 2 node1 node2<br>-hostfile hf</pre> | <pre>-hosts node1:1,node2:1<br>-f/-hostfile/-machine/-machinefile hf</pre> | `-f hf`||
+| Hostfile 格式 | `node1 slots=n` | `node1:n:hca1` | `node1:n` | `node1:n`||
+| 例程/测试 | examples/ | OSU Benchmark | Intel MPI Benchmark | exmaples/<br>`make testing` | |
+| 信息 | `ompi_info --all` | | | `mpiexec -info` | |
+
 ## OpenMPI
 
 !!! quote
@@ -78,17 +90,20 @@ OpenMPI 是一个大型项目，采用模块化组织，称为 MCA（Modular Com
 
 #### 通信库
 
-##### Libfabric
+通信库主要通过 PML 选择。一般会采用如下组合：
 
-!!! quote
+```text
+--mca pml ucx
+--mca pml_ucx_verbose 100
+--mca osc_ucx_verbose 100
+-x UCX_NET_DEVICES=
+-x UCX_LOG_LEVEL=trace
+```
 
-    - [fi_guide(7)](https://ofiwg.github.io/libfabric/main/man/fi_guide.7.html)
-
-Libfabric 简称 OFI，由不希望网络 API 受 InfiniBand 的抽象限制的厂商发起，如 Intel 和 Cicso。它构建在较高的抽象层次，支持 IB Verbs、Sockets、共享内存等。
-
-##### UCX
-
-UCX 支持 InfiniBand 和 RoCE 等 RDMA 设备。
+```text
+--mca pml ob1 \
+--mca btl ofi
+```
 
 #### PMIx
 
@@ -150,6 +165,13 @@ mpirun \
         --mca btl_openib_if_include mlx5_0:1
     ```
 
+调试选项：
+
+```text
+--mca mpi_show_mca_params all \
+--mca pml_base_verbose 100
+```
+
 ### 源码阅读
 
 #### 构建系统
@@ -164,8 +186,28 @@ mpirun \
 
 ##### openib
 
+## MPICH
+
+MPICH 是 MVAPICH、Intel MPI 等众多 MPI 实现的基础。MPICH 维护四个组件：
+
+- mpich
+- hydra：启动器，衍生版本大多也支持 hydra 启动
+- libpmi
+- mpich-testsuite
+
+简单梳理：
+
+- Process Manager（PM）：默认 hydra。编译时可选 gforker，仅在单节点上通过 fork 和 exec 创建进程。
+- Communication Device：MPICH 中的通信分为 device 和 module 层。
+    - `ch3` 意思是 3rd version of Channel interface。通过编译时 `--with-device=ch3:channel:module` 可选组件。`nemesis` 是默认 channel，单节点用 shared-memory，跨节点用 socket。
+    - 默认：`ch4`，支持的 module 有 ofi、UCX、POSIX 共享内存。
+
 ## MVAPICH
 
 这可能是目前最先进的 MPI 实现，受 NVIDIA 喜爱，并且也是神威 - 太湖之光所使用的 MPI 实现。
 
 MVAPICH 提供非常多种细分的版本，可根据需求选择。一般选用 MVAPICH2（源码分发）或 MVAPICH2-X（打包分发），提供最全面的 MPI 和 IB/RoCE 支持。
+
+用户手册见 MVAPICH 首页 Support->UserGuide。
+
+

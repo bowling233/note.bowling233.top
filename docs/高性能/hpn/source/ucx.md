@@ -87,6 +87,8 @@ src
 
 ## 源码阅读
 
+UCX 版本信息定义在 `configure.ac` 的 `ucx_ver` 中。
+
 ### 调试
 
 环境变量 `UCX_LOG_LEVEL=trace`，见 [Frequently Asked Questions — OpenUCX documentation](https://openucx.readthedocs.io/en/master/faq.html?highlight=ucx_log_level)。

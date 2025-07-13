@@ -1,5 +1,7 @@
 # Libfabric
 
+Libfabric 简称 OFI，由不希望网络 API 受 InfiniBand 的抽象限制的厂商发起，如 Intel 和 Cicso。它构建在较高的抽象层次，支持 IB Verbs、Sockets、共享内存等。
+
 ## 基础知识
 
 ### 整体结构
@@ -113,6 +115,8 @@ libfabric 有完善的使用教程。我们先总结 [fi_setup(7)](https://ofiwg
         - `pp_process_eq_err`: 处理事件队列错误（调用 `fi_eq_readerr`）
 
 ## 源码阅读
+
+libfabric 版本数宏定义写在 `include/rdma/fabric.h` 中。
 
 ### 调试
 

@@ -1,45 +1,10 @@
 # rdma-core
 
-!!! quote
 
-    - [Mellanox Adapters Programmer’s Reference Manual](https://network.nvidia.com/files/doc-2020/ethernet-adapters-programming-manual.pdf)：该手册适用于 CX4，详细地描述了 IB Verbs 编程的所有细节，细致到每个字段的定义。
-    - [RDMA Aware Networks Programming User Manual - NVIDIA Docs](https://docs.nvidia.com/networking/display/rdmaawareprogrammingv17)：包含 RDMA 架构概述和 IB Verbs、RDMACM 的 API 文档。**该文档第八章包含了各层次 API 编程的例子，具有比较详细的注释，适合初学者学习。**本文中的部分编程示例来自该手册。
 
 ## libibverbs
 
-### SRQ
-
-SRQ 作为 `struct ibv_qp_init_attr` 中的一个**可选**字段。
-
 ## librdmacm
-
-- 头文件：`rdma/rdma_cma.h`、`rdma_verbs.h`
-- 软件包名：`librdmacm-dev`
-
-librdmacm 提供以 `rdma_` 为前缀的另一套 API：
-
-- Connection Manager，负责管理 RDMA 连接。它包装了交换 QP、Key 等信息的过程，减少了代码量，让 RDMA 编程更加简单。它的接口与 Socket 比较类似：
-
-    ```c
-    rdma_listen()
-    rdma_connect()
-    rdma_accept()
-    ```
-
-- RDMA Verbs，本质上是建立在 libibverbs 上的一层包装。
-
-以 SRQ 的创建为例，我们看看具体的包装过程：
-
-```c title="librdmacm/cma.c"
-int rdma_create_srq(struct rdma_cm_id *id, struct ibv_pd *pd,
-    struct ibv_srq_init_attr *attr) {
-    ret = rdma_create_srq_ex(id, &attr_ex);
-}
-int rdma_create_srq_ex(struct rdma_cm_id *id, struct ibv_srq_init_attr_ex *attr) {
-    struct ibv_srq *srq;
-    srq = ibv_create_srq_ex(id->verbs, attr);
-}
-```
 
 ### 地址绑定
 

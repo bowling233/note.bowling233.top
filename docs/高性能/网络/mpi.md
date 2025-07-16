@@ -1,16 +1,20 @@
+<style type="text/css">
+th { white-space: nowrap; }
+</style>
+
 # MPI
 
 OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表对比了常见的 MPI 实现。
 
-| 对比项 | OpenMPI | MVAPICH | Intel MPI | MPICH ||
-| - | - | - | - | - | - |
-| 历史 | [History of Open MPI](https://docs.open-mpi.org/en/main/history.html)<br>2003<br>由 OSU、LANL、UTK 的 MPI 实现合并而来 | [mug15-overview_of_the_mvapich_project-dk_panda.pdf](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/2015/mug15-overview_of_the_mvapich_project-dk_panda.pdf)<br>2002<br>OSU 开发，衍生自 MPICH | （来自 Wikipedia）衍生自 MPICH | [MPICH Overview](https://www.mpich.org/about/overview/)<br>2001<br>由 ANL 和 MSU 开发 | |
-| 文档 | [Open MPI main documentation](https://docs.open-mpi.org/en/main/) | [MVAPICH :: UserGuide](http://mvapich.cse.ohio-state.edu/userguide/) | [Intel® MPI Library Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html) | [Guides \| MPICH](https://www.mpich.org/documentation/guides/) | |
-| mpirun 指向 | `prun`(v5.x)<br>`orterun`(v4.x) | `mpiexec.hydra`<br>`mpiexec.mpirun_rsh`（推荐） | `mpiexec.hydra` | hydra（默认）<br>gforker（编译选项） ||
-| Host 选项 | <pre>-H/--host node1:1,node1:1<br>--hostfile hf</pre> | <pre>-np 2 node1 node2<br>-hostfile hf</pre> | <pre>-hosts node1:1,node2:1<br>-f/-hostfile/-machine/-machinefile hf</pre> | `-f hf`||
-| Hostfile 格式 | `node1 slots=n` | `node1:n:hca1` | `node1:n` | `node1:n`||
-| 例程/测试 | examples/ | OSU Benchmark | Intel MPI Benchmark | exmaples/<br>`make testing` | |
-| 信息 | `ompi_info --all` | | | `mpiexec -info` | |
+| 对比项 | OpenMPI | MVAPICH | Intel MPI | MPICH | HPC-X | Platform MPI | Spectrum MPI |
+| - | - | - | - | - | - | - | - |
+| 历史 | [History of Open MPI](https://docs.open-mpi.org/en/main/history.html)<br>2003<br>由 OSU、LANL、UTK 的 MPI 实现合并而来 | [overview of the mvapich project](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/2015/mug15-overview_of_the_mvapich_project-dk_panda.pdf)<br>2002<br>OSU 开发，衍生自 MPICH | （来自 Wikipedia）衍生自 MPICH | [MPICH Overview](https://www.mpich.org/about/overview/)<br>2001<br>由 ANL 和 MSU 开发 | []<br><br>打包自 OpenMPI | IBM 闭源 | IBM 闭源 |
+| 文档 | [Open MPI main documentation](https://docs.open-mpi.org/en/main/) | [MVAPICH :: UserGuide](http://mvapich.cse.ohio-state.edu/userguide/) | [Intel® MPI Library Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html) | [Guides \| MPICH](https://www.mpich.org/documentation/guides/) | | | |
+| mpirun 指向 | `prun`(v5.x)<br>`orterun`(v4.x) | `mpiexec.hydra`<br>`mpiexec.mpirun_rsh`（推荐） | `mpiexec.hydra` | hydra（默认）<br>gforker（编译选项） || | |
+| Host 选项 | <pre>-H/--host node1:1,node1:1<br>--hostfile hf</pre> | <pre>-np 2 node1 node2<br>-hostfile hf</pre> | <pre>-hosts node1:1,node2:1<br>-f/-hostfile/-machine/-machinefile hf</pre> | `-f hf`|| | |
+| Hostfile 格式 | `node1 slots=n` | `node1:n:hca1` | `node1:n` | `node1:n`|| | |
+| 例程/测试 | examples/ | OSU Benchmark | Intel MPI Benchmark | exmaples/<br>`make testing` | OSU Benchmark<br>IMB<br>examples | mpitool | |
+| 信息 | `ompi_info --all` | `mpiname -a` | | `mpiexec -info` | | | |
 
 ## OpenMPI
 
@@ -26,11 +30,11 @@ OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表
 
 OpenMPI 是一个大型项目，采用模块化组织，称为 MCA（Modular Component Architecture），从上至下分为 Project、Framework、Component：
 
-![ompi/mca.png](mpi.assets/ompi/mca.png)
+![ompi/mca](mpi.assets/ompi/mca.webp)
 
 默认情况下，所有 component 被编译为动态链接库（Dynamic Shared Objects, DSO），可以按需加载：
 
-![ompi/dso.png](mpi.assets/ompi/dso.png)
+![ompi/dso](mpi.assets/ompi/dso.webp)
 
 到 OpenMPI v5.0，共有如下 FrameWork
 
@@ -90,6 +94,8 @@ OpenMPI 是一个大型项目，采用模块化组织，称为 MCA（Modular Com
 
 #### 通信库
 
+
+
 通信库主要通过 PML 选择。一般会采用如下组合：
 
 ```text
@@ -104,6 +110,20 @@ OpenMPI 是一个大型项目，采用模块化组织，称为 MCA（Modular Com
 --mca pml ob1 \
 --mca btl ofi
 ```
+
+IB 和 RoCE 设备支持：
+
+- `openib` 在 OpenMPI 5.1.x 后弃用。与之相关的变量有：
+
+    ```text
+    OMPI_MCA_btl_openib_if_include
+    ```
+
+- `ucx`：IB 和 RoCE 设备的首选模块，相关变量有：
+
+    ```text
+    UCX_NET_DEVICES
+    ```
 
 #### PMIx
 
@@ -209,5 +229,32 @@ MPICH 是 MVAPICH、Intel MPI 等众多 MPI 实现的基础。MPICH 维护四个
 MVAPICH 提供非常多种细分的版本，可根据需求选择。一般选用 MVAPICH2（源码分发）或 MVAPICH2-X（打包分发），提供最全面的 MPI 和 IB/RoCE 支持。
 
 用户手册见 MVAPICH 首页 Support->UserGuide。
+
+以 MVAPICH2 为例梳理：
+
+- 通信：基于 MPICH 的 CH3 改造，通过 OpenFabric 支持了多种 RDMA 通信，例如 OFA-IB-CH3、OFA-RoCE-CH3 等。
+
+### 构建和运行
+
+```bash
+./configure --enable-g=all --enable-error-messages=all \
+    --enable-debuginfo
+```
+
+```bash
+# RoCE
+MV2USERoCE=1 MV2USERDMACM=1
+# IB
+MV2_IBA=HCA=mlx4_0:mlx4_1
+```
+
+## 其他 MPI 实现
+
+### Platform MPI
+
+这是由 IBM 维护的一个古老的 MPI 实现。
+
+它使用一个同样古老的通信库 [DATL（Direct Access Transport Libraries）](https://www.openfabrics.org/downloads/dapl/README.html)，已于 2016 年停止支持。
+
 
 

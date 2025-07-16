@@ -190,37 +190,45 @@ ucs_class_t my_class_class = {
 
 1. **`uct_iface_t`**  
 
-   - 基础网络接口初始化，验证并设置接口的操作函数表（`ops`）。
-   - 确保所有必要的操作函数（如`ep_flush`、`ep_fence`等）均已定义。
-   - 主要功能是为接口提供通用的操作函数框架。
+    - 基础网络接口初始化，验证并设置接口的操作函数表（`ops`）。
+    - 确保所有必要的操作函数（如`ep_flush`、`ep_fence`等）均已定义。
+    - 主要功能是为接口提供通用的操作函数框架。
 
 2. **`uct_base_iface_t`**  
 
-   - 继承自`uct_iface_t`，扩展了基础接口的功能。
-   - 初始化内存分配方法、错误处理机制、工作线程等。
-   - 设置接口的统计信息和性能计数器。
-   - 主要功能是为接口提供更高级的通用功能，如内存管理和错误处理。
+    - 继承自`uct_iface_t`，扩展了基础接口的功能。
+    - 初始化内存分配方法、错误处理机制、工作线程等。
+    - 设置接口的统计信息和性能计数器。
+    - 主要功能是为接口提供更高级的通用功能，如内存管理和错误处理。
 
 3. **`uct_ib_iface_t`**  
 
-   - 继承自`uct_base_iface_t`，专为 InfiniBand 设备设计。
-   - 初始化 IB 设备的端口、队列对（QP）、完成队列（CQ）等硬件资源。
-   - 配置路径 MTU、流量控制（FC）参数、全局地址等。
-   - 主要功能是为 IB 设备提供底层硬件资源的初始化和配置。
+    - 继承自`uct_base_iface_t`，专为 InfiniBand 设备设计。
+    - 初始化 IB 设备的端口、队列对（QP）、完成队列（CQ）等硬件资源。
+    - 配置路径 MTU、流量控制（FC）参数、全局地址等。
+    - 主要功能是为 IB 设备提供底层硬件资源的初始化和配置。
 
 4. **`uct_rc_iface_t`**  
 
-   - 继承自`uct_ib_iface_t`，专为可靠连接（RC）模式设计。
-   - 初始化 RC 模式的发送和接收队列、原子操作处理函数、流控（FC）机制等。
-   - 配置 QP 的重试次数、RNR 超时等参数。
-   - 主要功能是为 RC 模式提供特定的可靠性和流控支持。
+    - 继承自`uct_ib_iface_t`，专为可靠连接（RC）模式设计。
+    - 初始化 RC 模式的发送和接收队列、原子操作处理函数、流控（FC）机制等。
+    - 配置 QP 的重试次数、RNR 超时等参数。
+    - 主要功能是为 RC 模式提供特定的可靠性和流控支持。
 
 5. **`uct_rc_verbs_iface_t`**  
 
-   - 继承自`uct_rc_iface_t`，专为 Verbs API 实现。
-   - 初始化 Verbs 特有的资源，如短描述符内存池、内联工作请求（WR）等。
-   - 配置最大内联数据大小、发送 SGE 数量等硬件限制。
-   - 主要功能是为 Verbs API 提供优化的资源管理和性能调优。
+    - 继承自`uct_rc_iface_t`，专为 Verbs API 实现。
+    - 初始化 Verbs 特有的资源，如短描述符内存池、内联工作请求（WR）等。
+    - 配置最大内联数据大小、发送 SGE 数量等硬件限制。
+    - 主要功能是为 Verbs API 提供优化的资源管理和性能调优。
+
+#### 建链过程
+
+[OpenUCX FAQ](https://openucx.readthedocs.io/en/master/faq.html#which-transports-does-ucx-use) 中有一行小字：
+
+> Using rc_verbs or rc_mlx5 also requires ud_verbs or ud_mlx5 transport for bootstrap.
+
+表明 UCX 同样不支持通过 ETH TCP 建链。
 
 #### SRQ 是在哪一层配置的？
 
@@ -257,4 +265,6 @@ struct uct_rc_iface {
 }
 ```
 
-可以看到从 `rc_iface` 这一层开始有 SRQ，容易找到其初始化函数：`uct_rc_iface_init_rx()`，该函数直接调用 `ibv_create_srq()` 进行创建。
+可以看到从 `rc_iface` 这一层开始有 SRQ，容易找到其初始化函数：`uct_rc_iface_init_rx()`，该函数直接调用 `ibv_create_srq()` 进行创建。上层调用链为：
+
+![srq.drawio](ucx.assets/srq.drawio)

@@ -47,47 +47,6 @@ tags:
 
 ## 第二章：构建和运行模块
 
-### 配置测试系统
-
-首先需要拉取内核源码树并构建，下面记录我的操作过程：
-
-!!! info "构建内核过程"
-
-    ```shell
-    git clone https://
-    cd linux
-    yes "" | make oldconfig
-    make -j
-    ```
-
-    在 Debian 系发行版上，依照 [Chapter 4. Common kernel-related tasks](https://www.debian.org/doc/manuals/debian-kernel-handbook/ch-common-tasks.html) 操作更加可靠：
-
-    ```shell
-    apt-get install linux-source build-essential fakeroot devscripts rsync git linux-headers-amd64
-    apt-get build-dep linux
-    tar xaf /usr/src/linux-source-*.tar.xz
-    cd linux-source-*
-    ```
-
-    在 RedHat 系发行版上，参考 [Building a Custom Kernel :: Fedora Docs](https://docs.fedoraproject.org/en-US/quick-docs/kernel-build-custom/)：
-
-    ```shell
-    dnf builddep kernel
-    dnf download --source kernel
-    rpm2cpio kernel*.rpm | cpio -idmv
-    cd linux-source-*
-    ```
-
-    如果只需要特定的内核模块，参考 [Building External Modules¶](https://docs.kernel.org/kbuild/modules.html)
-
-    ```shell
-    cd drivers/net/bonding
-    make -C /lib/modules/`uname -r`/build M=$PWD
-    make -C /lib/modules/`uname -r`/build M=$PWD modules_install
-    ```
-
-    此时模块会被安装到 `/lib/modules/$(uname -r)/update/*.ko`。直接用其覆盖目标模块即可。
-
 ### 样例模块
 
 略
@@ -508,7 +467,30 @@ circular buffer、atomic variable、seqlock 等可以实现无锁数据结构。
 
 ### ioctl
 
-略
+第三章介绍了 `read()` 和 `write()`。大多数驱动除了这两个接口传输数据，还需要执行复杂的控制指令。这通过下面的接口完成：
+
+```c
+// 用户空间系统调用
+int ioctl(int fd, usigned long cmd, ...);
+// 驱动程序接口
+int (*ioctl)(struct inode *inode, struct file *filp,
+    unsigned int cmd, unsigned long arg);
+```
+
+- `cmd` 命令编号在整个系统中唯一。因此它被划分为类型（对应设备驱动）、序列号、传输方向、参数大小，各字段大小宏定义：
+
+    ```text
+    _IOC_TYPEBITES _IOC_NRBITS _IOC_SIZEBITS
+    _IOC_NONE _IOC_READ _IOC_WRITE
+    ```
+
+    使用下列宏创建编号：
+
+    ```c
+    _IO(type, nr)
+    ```
+
+    选择类型的值时应检查 `include/asm/ioctl.h` 和 `Documentation/ioctl-number.txt`，后者记录了内核中类型值的分配。
 
 ### 阻塞 I/O
 
@@ -760,11 +742,15 @@ void ioport_unmap(void *addr);
     - [Industry Standard Architecture ISA | The Linux Tutorial](http://www.linux-tutorial.info/?page_id=267).
     - [Industry Standard Architecture - Wikipedia](https://en.wikipedia.org/wiki/Industry_Standard_Architecture)
 
+Since ISA has disappeared many years ago, we skip the ISA driver here.
+
 ## 第十章：中断处理
 
 ## 第十一章：内核中的数据类型
 
 ## 第十二章：PCI 驱动
+
+见 [总线]()
 
 ## 第十三章：USB 驱动
 
@@ -828,6 +814,96 @@ struct kobject {
 };
 ```
 
+### sysfs
+
+`kobject` 在 sysfs 中显示为目录，其中的属性显示为文件。调用 `kobject_add()` 的一个作用就是令其在 sysfs 中出现。属性通过下面的代码指定：
+
+```c
+struct kobj_type {
+   void (*release)(struct kobject *);
+   struct sysfs_ops *sysfs_ops;
+   struct attribute **default_attrs;
+};
+struct attribute {
+   char *name;
+   struct module *owner;
+   mode_t mode;
+};
+struct sysfs_ops {
+   ssize_t (*show)(struct kobject *kobj, struct attribute *attr,
+                   char *buffer);
+   ssize_t (*store)(struct kobject *kobj, struct attribute *attr,
+                    const char *buffer, size_t size);
+};
+```
+
+读取属性时调用 `show()`，写入时调用 `store()`。
+
+除了默认属性外，还可以用 `sysfs_create/remove_file()` 操作属性。
+
+一般约定，属性是人类可读的单值字符串。但在上传固件等场景下，还会需要二进制的属性：
+
+```c
+struct bin_attribute {
+   struct attribute attr;
+   size_t size;
+   ssize_t (*read)(struct kobject *kobj, char *buffer,
+                   loff_t pos, size_t size);
+   ssize_t (*write)(struct kobject *kobj, char *buffer,
+                   loff_t pos, size_t size);
+};
+sysfs_create/remove_bin_file()
+```
+
+使用 `sysfs_create/remove_link()` 将目标条目创建为该 kobj 的属性。
+
+### 热插拔事件
+
+在 kobj 被创建或删除时，内核向用户空间发出热插拔事件的通知。通常会激活 `/sbin/hotplug`，执行加载驱动程序等功能。
+
+`kobject_add/del()` 中生成热插拔事件，相关控制结构如下：
+
+```c
+struct kset_hotplug_ops {
+   int (*filter)(struct kset *kset, struct kobject *kobj);
+   char *(*name)(struct kset *kset, struct kobject *kobj);
+   int (*hotplug)(struct kset *kset, struct kobject *kobj,
+                  char **envp, int num_envp, char *buffer,
+                  int buffer_size);
+};
+```
+
+### 总线、设备和驱动
+
+大部分驱动程序并不需要了解这些内容，只需要使用总线逻辑就能完成。但 DMA 等操作需要直接与 `device` 交互。
+
+几个结构体：
+
+```c
+struct bus_type {
+   char *name;
+   struct subsystem subsys;
+   struct kset drivers;
+   struct kset devices;
+   int (*match)(struct device *dev, struct device_driver *drv);
+   struct device *(*add)(struct device * parent, char * bus_id);
+   int (*hotplug) (struct device *dev, char **envp,
+                   int num_envp, char *buffer, int buffer_size);
+   /* Some fields omitted */
+};
+struct device {
+   struct device *parent;
+   struct kobject kobj;
+   char bus_id[BUS_ID_SIZE];
+   struct bus_type *bus;
+   struct device_driver *driver;
+   void *driver_data;
+   void (*release)(struct device *dev);
+   /* Several fields omitted */
+};
+```
+
+
 ## 第十五章：内存映射与 DMA
 
 > 当我们进入复杂和性能关键的领域时，虚拟内存系统是 Linux 内核中非常有趣的一部分。
@@ -844,11 +920,15 @@ struct kobject {
 
 - 用户虚拟地址
 - 物理地址
-- 总线地址
+- I/O 地址或总线地址
 
     有些体系结构提供了 IOMMU（Input/Output Memory Management Unit）来处理总线地址到物理地址的映射。IOMMU 提供许多便利，比如通过地址重映射，设备看到的地址空间是连续的，但操作系统可能无法找到一块足够大的连续物理内存空间来满足需求，IOMMU 将这些连续的设备地址动态映射到实际物理内存中分散的缓冲区。
 
     IOMMU 简化了设备驱动程序的设计。
+
+    !!! tip "IOVA 与 Bus Address"
+
+        可以认为这两个名词是同一个意思，只是使用的语境不同。强调 IOMMU 时（比如在 RDMA 相关文档中）一般使用 IOVA；强调总线（比如 PCIe 文档中）一般使用 Bus Address。
 
 - 内核逻辑地址
 

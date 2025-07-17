@@ -152,11 +152,6 @@ class ChildClass(ParentClass):
 - 每个类定义后都应当包含一个文档字符串
 - 每个模块都应包含一个文档字符串
 
-## 标准库
-
-- `collections` 模块：包含很多有用的类
-    - `OrderedDict` 类：记录键值对的添加顺序
-
 ## 字符串与 I/O
 
 字符串的写法：
@@ -534,6 +529,38 @@ unittest.main()
     - `.`：测试通过
     - `E`：测试引发错误
     - `F`：测试断言失败
+
+## 标准库
+
+- `collections`：包含很多有用的类
+    - `OrderedDict` 类：记录键值对的添加顺序
+- `argparse`
+
+    ```python
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", ...)
+    args = parser.parse_args()
+    print(f"{args.input}")
+    ```
+
+    - 以 `-` 开头的识别为**可选参数**，否则为**位置参数**
+    - 参数最终存放的变量名由 `add_argument()` 的 `dest` 参数决定，默认是对**第一个长选项名进行 strip**：移除开头的 `-`，将中间的 `-` 转换为 `_`
+
+        !!! example
+
+            ```python
+            add_argument('-f', '--foo-bar', '--foo')
+            ```
+
+            结果为 `foo_bar`
+    
+## 常用第三方库
+
+### 
+
+---
+
+待整理
 
 ## Projects
 

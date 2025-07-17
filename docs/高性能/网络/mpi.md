@@ -1,7 +1,3 @@
-<style type="text/css">
-th { white-space: nowrap; }
-</style>
-
 # MPI
 
 OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表对比了常见的 MPI 实现。

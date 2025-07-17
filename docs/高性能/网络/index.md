@@ -12,13 +12,54 @@
 
 读者应当了解：
 
-- 基本元素：Queue Pair、Work Queue Element、Send/Receive Queue
+- 基本元素：
+    - Send/Receive Queue
+    - Work Queue Element
+    - Queue Pair：存放 WQE 的一块空间
+        - 特殊 QP：
+            - 0：子网管理 Subnet Management Interface（仅 InfiniBand）
+            - 1：通用服务接口 General Service Interface，包括 CM
+        - 状态：RST、INIT、RTR、RTS、SQD、SQEr、ERR
+    - Queue Pair Context：S/RQ 的地址、大小、编号等信息
+        - QPN 24b 节点唯一，GID 128b 网络唯一
+    - Completion Queue
+        - 可关联多个 S/RQ
+        - 同一 WQ 的 CQE 保序；SRQ 和 RD 下的 RQ 不保序
+    - Completion Queue Element：
+        - 包含 WQE 编号
+        - 错误类型：Immediate（立即返回上报）/Completion（CQE 上报）/Asynchronous（中断上报）
+        - 通知方式：Poll、Notification
 - 操作类型：Send-Receive、Write、Read、Atomic
 - 服务类型：Reliable/Unreliable、Connection/Datagram
-- 资源结构：Memory Region、Protection Domain、Address Handle、Queue Pair、Completion Queue
+    - UD：QP 间无连接，WQE 中填 Address；为了安全，此时有 QKey，请求中也带上
+        - 最高位为 `1` 的 QKey 是特权 QKey，只有内核能用
+    - RD：End-to-End Context
+- 资源结构：
+    - Memory Region：
+        - 作用：VA/PA/IOVA 转换、R/LKey 访问权限控制、Pin 页面
+        - 权限：Remote/Local Read/Write/Atomic
+        - L/RKey 组成：24b index 索引转换表 + 8b key 校验
+        - 要使 RKey 失效，只能注销重注册
+        - Memory Window：动态绑定到 MR，灵活控制权限，无需内核态
+    - Scatter Gather Element/List：
+        - 内容：地址、长度、LKey
+    - Protection Domain：安全性，阻止 AH、QP 和 MR 等资源的跨 PD 互访
+    - Address Handle：地址指 GID、端口号和 MAC 地址等，UD 通过 AH 索引地址信息
+    - Queue Pair、Completion Queue
 - 高级话题：
     - SRQ：
-    - CM
+        - RC/UC/UD 接收方必须预先下发足够多的 WQE，造成大量 RQ 浪费，通过共享节省内存
+        - 所属的 PD 可以与关联的 QP 不同
+        - 状态：只有错误和非错误，错误了只能销毁
+    - Connection Management Protocol：
+        - MAnagement Datagram：基于 UD 实现，向上支持 GS 和 SM；使用 QP1 和 QKey `0x8001_0000`
+- 建链：[Connecting Queue Pairs « RDMAmojo](https://www.rdmamojo.com/2014/01/18/connecting-queue-pairs/)
+
+    | 传输类型 | 需要交换的信息 |
+    | - | - |
+    | RC Send | GID, QPN |
+    | RC Write/Read | GID, QPN, VA, RKey |
+    | UD Send | GID, QPN, QKey |
 
 作者最后一次更新是在 2023 年，尚有一些内容鸽了没有介绍。接下来本章就一些高级话题进行补充。
 
@@ -44,14 +85,493 @@ XRC 尝试在此之上继续降低内存占用，这次通过**减少连接数**
 
 XRC 的想法类似于 RDMA RD
 
-## 软件
+### 其他问题
+
+- 为什么 SRQ 和 RD 下的 RQ 不保序？
+
+## 软件栈
 
 阅读 [For the RDMA novice: libfabric, libibverbs, InfiniBand, OFED, MOFED? — Rohit Zambre](https://www.rohitzambre.com/blog/2018/2/9/for-the-rdma-novice-libfabric-libibverbs-infiniband-ofed-mofed)，了解这些软件包的关系。
 
+### 实用工具
+
+#### infiniband-diags
+
+提供了非常多的工具，见 [infiniband-diags(8)](https://github.com/linux-rdma/rdma-core/blob/master/infiniband-diags/man/infiniband-diags.8.in.rst)。在 Debian 上，它们位于 `/usr/sbin` 中。
+
+这里记录常用的一些：
+
+```bash
+# 查询
+ibstat
+ibstatus
+ibaddr
+ibnodes
+ibhosts
+ibrouters
+ibswitches
+iblinkinfo
+ibnetdiscover
+# 查询当前 IB 子网管理的位置
+sminfo
+# 测试
+ibping # 注意，需要在另一台机器上使用 ibping -S 作为 server，否则是 ping 不通的。
+ibping -c <count> -L <lid>
+ibroute
+ibtracert
+```
+
+#### OpenSM
+
+IB 管理交换机能够作为 Subnet Manager（SM）来管理 IB 网络。SM 负责发现和配置所有 InfiniBand 设备。
+
+使用非网管 IB 交换机时，IB 网络中缺少 Subnet Manager（SM），此时所有 HCA 状态为 Initializing。可以在其中的一台主机上安装开源的 OpenSM：
+
+```bash
+sudo apt install opensm
+sudo systemctl enable --now opensm
+```
+
+#### mstflint
+
+!!! quote
+
+    - [:simple-github: Mellanox/mstflint: Mstflint - an open source version of MFT (Mellanox Firmware Tools)](https://github.com/Mellanox/mstflint)
+
+`mstflint` 是 Mellanox Firmware Flash Interface 的缩写，用于管理 Mellanox 网卡的固件。诸如切换 RoCE 与 InfiniBand 模式、更新固件等比较底层的操作都可以通过这个工具完成。
+
+下面以将端口模式从 ETH(2) 切换到 IB(1) 为例演示命令用法：
+
+```shell
+$ mstconfig query
+$ sudo mstconfig -d 4b:00.0 set LINK_TYPE_P1=1
+
+Device #1:
+----------
+
+Device type:        ConnectX5
+Name:               MCX555A-ECA_Ax_Bx
+Description:        ConnectX-5 VPI adapter card; EDR IB (100Gb/s) and 100GbE; single-port QSFP28; PCIe3.0 x16; tall bracket; ROHS R6
+Device:             4b:00.0
+
+Configurations:                                     Next Boot       New
+        LINK_TYPE_P1                                ETH(2)               IB(1)
+
+ Apply new Configuration? (y/n) [n] : y
+Applying... Done!
+-I- Please reboot machine to load new configurations.
+$ mstfwreset -d 4b:00.0 -l3 -y reset
+```
+
+其他命令见 mstflint 发布自带的手册。
+
+??? info "老版本命令留档"
+
+    MLNX_OFED 包含了 mstflint，但一般版本较老，与新版 mstflint 命令不兼容。这里仅作为留档记录一下。
+
+    新版本相比老版本的变化：
+
+    - 不需要执行 `mst start`，服务自动启动。
+    - 命令名称发生变化，比如 `mlxconfig` 变为 `mstconfig`。
+
+    ```shell
+    # 查看所有设备
+    mst status
+    # 线缆
+    mst cable add # 扫描线缆，线缆一般不会自动被添加
+    mlxcables -d e3:00.0_cable_0 -q
+    # 链路
+    mlxlink
+    # 配置
+    mlxconfig -d <device> query # 查询详细信息
+    Device #1:
+    ----------
+    Device type:    ConnectX5
+    Name:           MCX555A-ECA_Ax_Bx
+    Description:    ConnectX-5 VPI adapter card; EDR IB (100Gb/s) and 100GbE; single-port QSFP28; PCIe3.0 x16; tall bracket; ROHS R6
+    Device:         31:00.0
+    Configurations:                                      Next Boot
+            MEMIC_BAR_SIZE                              0
+            MEMIC_SIZE_LIMIT                            _256KB(1)
+            HOST_CHAINING_MODE                          DISABLED(0)
+            HOST_CHAINING_CACHE_DISABLE                 False(0)
+            HOST_CHAINING_DESCRIPTORS                   Array[0..7]
+            HOST_CHAINING_TOTAL_BUFFER_SIZE             Array[0..7]
+            FLEX_PARSER_PROFILE_ENABLE                  0
+            FLEX_IPV4_OVER_VXLAN_PORT                   0
+            ROCE_NEXT_PROTOCOL                          254
+            ESWITCH_HAIRPIN_DESCRIPTORS                 Array[0..7]
+            ESWITCH_HAIRPIN_TOT_BUFFER_SIZE             Array[0..7]
+            PF_BAR2_SIZE                                0
+    ```
+
+#### HCA 卡
+
+使用 `ibstat` 命令可以查看 HCA 卡的状态。只要能在这里看到 HCA 卡，就说明驱动已经加载。
+
+端口的状态有以下几种：
+
+| State | Physical State | 说明 |
+| --- | --- | --- |
+| Down | Disabled | 未连接线缆 |
+| Polling | Polling | 如果持续处于该状态说明 IB 子网没有 SM |
+| Active | LinkUp | 连接正常 |
+
+#### DHCP for IPoIB
+
+我们使用 dnsmasq 作为 DHCP 服务器。在 dnsmasq 官方示例中有这样一段：
+
+```text title="dnsmasq.conf"
+# Always give the InfiniBand interface with hardware address
+# 80:00:00:48:fe:80:00:00:00:00:00:00:f4:52:14:03:00:28:05:81 the
+# ip address 192.168.0.61. The client id is derived from the prefix
+# ff:00:00:00:00:00:02:00:00:02:c9:00 and the last 8 pairs of
+# hex digits of the hardware address.
+# dhcp-host=id:ff:00:00:00:00:00:02:00:00:02:c9:00:f4:52:14:03:00:28:05:81,192.168.0.61
+```
+
+可能是因为 InfiniBand 迭代，现在已经不适用了。我们在 NVIDIA 的某份文档（忘掉是哪份了）中看到了这样的写法：
+
+```text
+id:20 + 硬件地址后 8 对十六进制数字
+```
+
+这是可行的。
+
+#### Benchmark
+
+[`perftest`](https://github.com/linux-rdma/perftest) 软件包由 `linux-rdma` 维护，用于测试 InfiniBand 性能，可用于 RoCE。
+
+```bash
+# 客户端
+ib_write_lat --ib-dev=mlx5_0 --ib-port=1 MAX01-ib -a -R
+# 服务端
+ib_write_lat --ib-dev=mlx5_0 --ib-port=1 -R -a
+
+ib_send_lat     latency test with send transactions
+ib_send_bw      bandwidth test with send transactions
+ib_write_lat    latency test with RDMA write transactions
+ib_write_bw     bandwidth test with RDMA write transactions
+ib_read_lat     latency test with RDMA read transactions
+ib_read_bw      bandwidth test with RDMA read transactions
+ib_atomic_lat   latency test with atomic transactions
+ib_atomic_bw    bandwidth test with atomic transactions
+```
+
+#### iproute2
+
+强大的 iproute2 同样支持了 RDMA 网络接口的管理，提供了 `rdma` 命令，语法与 `ip` 命令类似：
+
+```bash
+ip link
+rdma link
+```
+
+#### 其他
+
+一个用于看 IB 卡实时流量的脚本：
+
+```bash
+#!/bin/bash
+
+# Author: Chen Jinlong
+# Usage: ib_monitor.sh [interval]
+
+declare -A old_recv_bytes;
+declare -A old_recv_packets;
+declare -A old_xmit_bytes;
+declare -A old_xmit_packets;
+
+interval=$1
+if [ -z $interval ]; then
+    interval=1
+fi
+
+for ib_dev in $(ls /sys/class/infiniband/); do
+    counter_dir="/sys/class/infiniband/$ib_dev/ports/1/counters"
+    old_recv_bytes[$ib_dev]=$(cat $counter_dir/port_rcv_data)
+    old_recv_packets[$ib_dev]=$(cat $counter_dir/port_rcv_packets)
+    old_xmit_bytes[$ib_dev]=$(cat $counter_dir/port_xmit_data)
+    old_xmit_packets[$ib_dev]=$(cat $counter_dir/port_xmit_packets)
+done
+
+while true; do
+    printf "%-10s %12s %12s %12s %12s\n" Device recv_MBps recv_kpps xmit_MBps xmit_kpps
+    for ib_dev in $(ls /sys/class/infiniband/); do
+        counter_dir="/sys/class/infiniband/$ib_dev/ports/1/counters"
+        new_recv_bytes=$(cat $counter_dir/port_rcv_data)
+        new_recv_packets=$(cat $counter_dir/port_rcv_packets)
+        new_xmit_bytes=$(cat $counter_dir/port_xmit_data)
+        new_xmit_packets=$(cat $counter_dir/port_xmit_packets)
+
+        recv_MBps=$(echo "scale=2; ( $new_recv_bytes - ${old_recv_bytes[$ib_dev]} ) / 256.0 / 1024.0 / $interval" | bc)
+        recv_kpps=$(echo "scale=2; ( $new_recv_packets - ${old_recv_packets[$ib_dev]} ) / 1000.0 / $interval" | bc)
+        xmit_MBps=$(echo "scale=2; ( $new_xmit_bytes - ${old_xmit_bytes[$ib_dev]} ) / 256.0 / 1024.0 / $interval" | bc)
+        xmit_kpps=$(echo "scale=2; ( $new_xmit_packets - ${old_xmit_packets[$ib_dev]} ) / 1000.0 / $interval" | bc)
+
+        printf "%-10s %12s %12s %12s %12s\n" $ib_dev $recv_MBps $recv_kpps $xmit_MBps $xmit_kpps
+
+        old_recv_bytes[$ib_dev]=$new_recv_bytes
+        old_recv_packets[$ib_dev]=$new_recv_packets
+        old_xmit_bytes[$ib_dev]=$new_xmit_bytes
+        old_xmit_packets[$ib_dev]=$new_xmit_packets
+    done
+    printf "\n"
+
+    sleep $interval
+done
+```
+
+### 用户空间库
+
+阅读 [:simple-github: linux-rdma/rdma-core](https://github.com/linux-rdma/rdma-core) 的简介。
+
+#### Linux InfiniBand 软件结构
+
+!!! quote
+
+    - [InfiniBand - The Linux Kernel](https://docs.kernel.org/infiniband/index.html)
+    - [InfiniBand Software on Linux - Oracle](https://docs.oracle.com/cd/E19932-01/820-3523-10/ea_chpt3_software_overview.html)
+    - [Developing a Linux Kernel module using RDMA for GPUDirect - NVIDIA](<https://docs.nvidia.com/cuda/archive/11.3.0/pdf/GPUDirect_RDMA.pdf>)
+
+Linux 内核中的 InifiniBand 可以分为三个层次：
+
+- HCA Driver
+- Core InfiniBand Modules
+- Upper Level Protocols
+
+#### RDMA Verb
+
+#### InfiniBand Verb
+
+#### IPoIB
+
+!!! quote
+
+    - [Transmission of IP over InfiniBand (IPoIB) - RFC 4391](https://datatracker.ietf.org/doc/html/rfc4391)
+    - [IP over InfiniBand (IPoIB) Architecture - RFC 4392](https://datatracker.ietf.org/doc/html/rfc4392)
+    - [IP over InfiniBand - The Linux Kernel](https://docs.kernel.org/infiniband/ipoib.html)
+
+Linux 内核提供 `ib_ipoib` 驱动。
+
+#### NFS over RDMA
+
+
+### 内核子系统
+
+阅读 [:simple-github: linux/drivers/infiniband](https://github.com/torvalds/linux/blob/master/drivers/infiniband)。
+
+#### 硬件驱动 `hw`
+
+你可以在 `hw` 下看到这里不仅有 InfiniBand 驱动，还有 RoCE 和 iWARP 等驱动。代码注释、内核模块的 Description 中会说明这是哪个厂商的驱动。下面举一些常见的例子：
+
+- InfiniBand
+    - `mlx4`: Mellanox ConnectX HCA InfiniBand driver
+    - `mlx5`: Mellanox 5th generation network adapters (ConnectX series) IB driver
+    - `mthca`: Mellanox InfiniBand HCA low-level driver
+- RoCE
+    - `erdma`：来自阿里巴巴
+    - `hns`：来自华为海思
+    - `irdma`: [Linux* RDMA Driver for the E800 Series and X722 Intel(R) Ethernet Controllers](https://downloadmirror.intel.com/738730/README_irdma.txt)
+- iWARP
+    - `cxgb3`
+
+此外你可能在远古文档中看见过 `amso`、`ipath` 等驱动。它们已经因为停止维护而被移出内核源码树。
+
+`mthca` 用于远古的 InfiniHost 系列产品。[MLNX_OFED 文档](https://docs.nvidia.com/networking/display/ofedv502180/introduction) 详细解释了 `mlx4` 和 `mlx5` 这两个驱动。下图展示了这些驱动模块工作的位置。
+
+<figure markdown="span">
+    ![mlx4_mlx5](index.assets/mlx4_mlx5.webp)
+    <figcaption>Mellanox ConnectX 驱动<br />
+    <small>
+    [Mellanox OFED User Manual](https://docs.nvidia.com/networking/display/ofedv502180/introduction/)
+    </small></figcaption>
+</figure>
+
+- CX-3 和 CX-3 Pro 对应 `mlx4`，其后的产品对应 `mlx5`。
+- CX-3 既可以工作在 InfiniBand 模式，也可以工作在 Ethernet 模式。因此 `mlx4` 分为几个模块：
+    - `mlx4_core`
+    - `mlx4_ib`
+    - `mlx4_en`，位于 `drivers/net/ethernet/mellanox/mlx4`。
+- 其后的产品也可以工作在 InfiniBand 和 Ethernet 模式，但以太网功能被合并到 `core` 中，因此不需要 `mlx5_en`（虽然这个驱动确实存在于 `drivers/net/ethernet/mellanox/mlx5` 中）：
+    - `mlx5_core`
+    - `mlx5_ib`
+
+MLNX_OFED 文档中还有驱动的参数等，可以参考。
+
+#### 软件驱动 `sw`
+
+- `rxe`：软件实现的 RoCE。
+- `siw`：Soft iWARP，软件实现的 iWARP。
+- `rdmavt`：RDMA Verbs Transport Library。用于统一硬件驱动的一层，示意图如下：
+
+    <figure markdown="span">
+        ![rdmavt](index.assets/rdmavt.webp)
+        <figcaption>
+        RDMA Verbs Transport Library<br />
+        <small>
+        [Creating a Common Software Verbs Implementation - OpenFabrics Alliance](https://www.openfabrics.org/images/eventpresos/2016presentations/203SoftwareVerbs.pdf)
+        </small></figcaption>
+    </figure>
+
+    举一个具体的作用：`rdmavt` 代表驱动调用 `ib_register_device()` 注册设备。
+
+    详细解释见 [Creating a Common Software Verbs Implementation - OpenFabrics Alliance](https://www.openfabrics.org/images/eventpresos/2016presentations/203SoftwareVerbs.pdf)。
+
+#### 上层协议 `ulp`
+
+在前文 [InfiniBand 协议栈](#infiniband-协议栈) 中，我们已经介绍了 Upper Layer Protocols 用于将 InfiniBand 连接到常用的接口。在 `ulp` 中，我们可以看到这些协议的具体实现。其中值得探究的有：
+
+- `ipoib`
+
+NFS over RDMA 虽然也是一个 ULP，但它似乎实现在 IPoIB 上，因此不出现在这里。
+
+#### 核心模块 `core`
+
+!!! quote
+
+    - [InfiniBand and Remote DMA (RDMA) Interfaces — The Linux Kernel documentation](https://docs.kernel.org/driver-api/infiniband.html)
+
+TODO
+
 ## 硬件
+
+前文语境中的 RDMA 指的是一种机制。考虑其具体实现，就涉及到多种技术。现有的 RDMA 技术包括 RoCE（RDMA over Converged Ethernet）、InfiniBand、iWARP 等。
+
+<figure markdown="span">
+    ![rdma_arch_compare](index.assets/rdma_arch_compare.webp){ width=80% align=center}
+    <figcaption>
+    RDMA 技术架构比较<br />
+    <small>
+    [浅析 RoCE 网络技术 - 腾讯云](https://cloud.tencent.com/developer/article/1771431)
+    </small></figcaption>
+</figure>
+
+- **InfiniBand**：专为 RDMA 设计的网络技术，从硬件级别保证可靠传输。**需要专门的网络适配器、交换机。**
+- **RoCE 和 iWARP**：都是基于以太网的 RDMA 技术，RoCE 使用 UDP 协议，iWARP 使用 TCP 协议。
+    - **Soft RoCE**：可以以 Soft RoCE 的方式（使用 [`rxe` 驱动](https://github.com/SoftRoCE/librxe-dev)）运行在普通以太网上，但在带宽和延迟上都和普通以太网没什么差别（见 [Comparing Ethernet and soft Roce over 1 gigabit ethernet using osu benchmark - IJCSIT](https://www.ijcsit.com/docs/Volume%205/vol5issue01/ijcsit2014050168.pdf)）。
+    - **聚合以太网（Converged Ethernet）**：真正的 RoCE 就和它全名描述的一样，需要交换机和网络适配器支持聚合以太网。这是由 IEEE DCB 工作组提出的一组增强标准（比如 802.Qbb 流控、802.Qaz 传输选择、802.Qau 拥塞控制等）组成的，有两大目的：
+        1. 将存储、通信、计算等流量（如 iSCSI、FCoE、RDMA）**整合**到一套共享的以太网基础设施上，这就是“聚合”的意思。
+        2. 支持**不丢包**传输，从而支持对传输可靠性要求极高的服务（比如 RDMA）。
+- 其他专有技术：如 Intel 的 Omni-Path。
 
 ### InfiniBand
 
+!!! quote
+
+    - [RDMA - Debian Wiki](https://wiki.debian.org/RDMA)
+    - [OFED for Linux – OpenFabrics Alliance](https://www.openfabrics.org/ofed-for-linux/)
+    - [InfiniBand In-Network Computing Technology and Roadmap - Mellanox](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/19/shainer-mug-19.pdf)
+
+下面两张图是 InfiniBand 技术栈。可以看到 InfiniBand 是一套系统的解决方案，包含网络适配器、交换机、SoC、线缆和软件生态。
+
+<figure markdown="span">
+    ![ib_tech_roadmap_2015](index.assets/ib_tech_roadmap_2015.webp){ width=45% style="float: left"}
+    ![ib_tech_roadmap_2019](index.assets/ib_tech_roadmap_2019.webp){ width=55%}
+    <figcaption>
+    InfiniBand 技术路线<br />
+    左 2015 年，右 2019 年<br />
+    <small>
+    [Mellanox Touts Arrival of Intelligent Interconnect - HPC Wire](https://www.hpcwire.com/2015/11/16/mellanox-touts-arrival-of-intelligent-interconnect/)<br />
+    [InfiniBand In-Network Computing Technology and Roadmap - MVAPICH](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/19/shainer-mug-19.pdf)
+    </small></figcaption>
+</figure>
+
+- **提供商**：NVIDIA Mellanox 仅此一家。
+- **内核支持情况**：
+    - **子系统**：Linux 内核将 InfiniBand 作为一个驱动子系统提供支持，见 [InfiniBand and Remote DMA (RDMA) Interfaces — The Linux Kernel documentation](https://docs.kernel.org/driver-api/infiniband.html)。
+    - **用户空间**：只有内核接口是不够的，还需要用户空间的库和工具。内核团队维护了一套用户空间库和工具，见 [:simple-github: linux-rdma/rdma-core: RDMA core userspace libraries and daemons](https://github.com/linux-rdma/rdma-core)。
+
+        它提供了两个重要的库（包含 C/C++ 和 Python 绑定），大多数 RDMA 应用都基于它们开发：
+
+        - `librdmacm`：使用 IP 寻址建立连接，比 `libibverbs` 抽象程度更高，对于写过 socket 程序的人来说更容易上手。
+        - `libibverbs`：提供其他控制和数据通路操作，实现 InfiniBand Trade Association（IBTA）定义的抽象接口。
+
+        <figure markdown="span">
+            ![rdma_core](index.assets/rdma_core.webp){ width=50% align=center}
+            <figcaption>
+            RDMA 栈
+            <br /><small>
+            [RDMA Tutorial - Netdev](https://netdevconf.info/0x16/slides/40/RDMA%20Tutorial.pdf)
+        </small></figcaption></figure>
+
+    !!! info
+
+        这也就是说 Linux 不安装厂商的驱动也可以使用 InfiniBand。比如 NVIDIA 停止了 ConnectX-3 在 Debian 10 之后的 MLNX\_OFED 版本的支持，但用内核中的 rdma-core 等仍然可以使用。通过 rdma-core，我们在 Debian 12 中成功使用了 ConnectX-3 卡。
+
+- **产商支持**：
+    - **[OpenFabrics](https://www.openfabrics.org/ofa-overview/)**：OFA 联盟负责开发、测试、许可、支持和分发 RDMA/先进网络软件，目标是促进先进网络架构的发展与普及。成员包括 Mellanox、HUAWEI、Intel、IBM、Red Hat、Microsoft 等厂商和 SNIA 等标准组织。OpenFabrics 曾经是 OpenIB Alliance，但后来扩展支持了 iWARP、RoCE 等。
+    - **[OpenFabrics Enterprise Distribution（OFED）](https://www.openfabrics.org/ofed-for-linux/)**：产商们从 linux-rdma 拉取源代码，针对自己的产品进行优化、修改、打补丁等。非常重要的是它提供了**内核旁路（kernel bypass）**功能，一些应用程序可以直接访问硬件资源，极大提高性能。此外，适配器和线缆等的**固件更新**也需要产商的工具。
+
+    !!! warning
+
+        MLNX_OFED 已经停止支持，将转移到 DOCA-OFED。
+
+#### InfiniBand 硬件
+
+InfiniBand 标准中定义的硬件组成部分有：
+
+- **Host Channel Adapter（HCA）**：可以理解为网络适配器。
+- **Target Channel Adapter（TCA）**：可以理解为嵌入式系统的网络适配器。
+- **Switch**：实现了 InfiniBand 链路层流控的交换机，能够不丢包传输。
+- **Router**：用于大型网络。IB 管理架构以子网为单位，通过路由器分隔子网能够减少管理流量在整个网络中的传输。
+- **Cable and Connector**：
+
+##### Host Channel Adapter
+
+网络适配器
+
+NVIDIA Mellanox 制造的网络适配器系列名称为 ConnectX。这些网络适配器一般支持 InfiniBand 或 RoCE 模式，可灵活配置。
+
+| **Feature**        | **ConnectX-3**         | **ConnectX-4**                   | **ConnectX-5**                   | **ConnectX-6**                       | **ConnectX-7**                       |
+| :----------------- | :--------------------- | :------------------------------- | :------------------------------- | :----------------------------------- | :----------------------------------- |
+| Speed | 56Gb/s | 100Gb/s | 100Gb/s | 200Gb/s | 400Gb/s |
+| Connector |  |  | QSFP28 | QSFP56 | OSFP, QSFP112 |
+| PCIe               | x8 Gen3                | x8, x16 Gen3                     | Gen3/4 x16 | Gen3/4 x16          | Gen4/5 x16                |
+| IB RDMA / RoCE     | IB RDMA, RoCE*         | IB RDMA, RoCE                    | IB RDMA, RoCE                    | IB RDMA, RoCE                        |IB RDMA, RoCE|
+| SR-IOV             | Supported              | Supported                        | Supported                        | Supported                            |Supported|
+
+<small>这张表来自 [Mellanox Adapters - Comparison Table](https://enterprise-support.nvidia.com/s/article/mellanox-adapters---comparison-table) 以及 [Networking-datasheet-InfiniBand-Adapter-Cards---web--1549706.pdf (widen.net)](https://nvdam.widen.net/s/cprk9mhfzq/networking-datasheet-infiniband-adapter-cards---web--1549706)。</small>
+
+NVIDIA 是 InfiniBand 技术的唯一供应商，目前其他厂家最多只能制造 IB 线缆。而 RoCE 技术则有众多 ICT 厂商支持，如 Cisco、华为、Juniper 等。
+
+##### 线缆
+
+InfiniBand 线缆端子上有 EEPROM 芯片，可以存储线缆的信息，如长度、型号、序列号等。
+
+##### 交换机
+
+#### InfiniBand 协议栈
+
+!!! quote
+
+    - Presentation:
+        - [(2013)InfiniBand Architecture Overview - SNIA](https://www.snia.org/sites/default/files/files2/files2/SDC2013/presentations/Hardware/DavidDeming_Infiniband_Architectural_Overview.pdf)
+        - [(2008)InfiniBand Technology Overview - SNIA](https://www.snia.org/sites/default/education/tutorials/2008/spring/networking/Goldenberg-D_InfiniBand_Technology_Overview.pdf)
+    - White Paper:
+        - [(2003)Introduction to InfiniBand™ - NVIDIA](https://network.nvidia.com/pdf/whitepapers/IB_Intro_WP_190.pdf)
+        - [(2010)Introduction to InfiniBand™ for End Users - NVIDIA](https://network.nvidia.com/pdf/whitepapers/Intro_to_IB_for_End_Users.pdf)
+    - Specification: [(2007)InfiniBand Architecture Release 1.2.1 - ENEA](https://www.afs.enea.it/asantoro/V1r1_2_1.Release_12062007.pdf)
+
+让我们忽略负责路由的网络层及更低层次，从 Transport Layer 开始。在传输层中，InfiniBand 双端建立消息队列（Queue Pair）进行通信。定义以下 Transport Functions：SEND、RDMA Write、RDMA Read、ATOMIC、Memory Binding。这些操作在不同服务等级（Transport Service Level）中的可用性不同。
+
+SM：子网管理器。The InfiniBand Subnet Manager (SM) is a centralized entity running in the switch. The SM discovers and configures all the InfiniBand fabric devices to enable traffic flow between those devices. 每个 IB 网络中都需要一个 SM，否则 ibstat 一直会处于 Initializing 的状态。在 Switchless IB Network 中，其中的一台机器应当启动 OpenSM（在 LInux Kernel 中，一般发行版都会带）。用 sudo 启动 opensm，或者用 systemctl 启动 opensmd.service 即可。
+
+```text
+The installation of OpenSM includes:
+sbin/
+   opensm - the SM/SA executable
+   osmtest - a test program for the SM/SA
+lib/
+   libosmcomp.{a,so} - component library with generic services and containers
+   libopensm.{a,so} - opensm services for logs and mad buffer pool
+   libosmvendor.{a,so} - interface to the user mad service of the driver
+include/
+   iba/ib_types.h - IBA types header file
+   complib/ - component library includes
+   vendor/  - vendor library includes
+   opensm/  - public opensm library includes
+```
 
 ### RoCE
 
@@ -61,7 +581,7 @@ XRC 的想法类似于 RDMA RD
 
 RoCE 协议存在 RoCEv1 和 RoCEv2 两个版本，取决于所使用的网络适配器。
 
-- RoCE v1：基于以太网**链路层**实现的 RDMA 协议 (交换机需要支持 PFC 等流控技术，在物理层保证可靠传输）。
+- RoCE v1：基于以太网**链路层**实现的 RDMA 协议（交换机需要支持 PFC 等流控技术，在物理层保证可靠传输）。
 - RoCE v2：封装为 **UDP（端口 4791） + IPv4/IPv6**，从而实现 L3 路由功能。可以跨 VLAN、进行 IP 组播了。RoCEv2 可以工作在 Lossless 和 Lossy 模式下。
     - Lossless：适用于数据中心网络，要求交换机支持 DCB（Data Center Bridging）技术。
 
@@ -75,6 +595,21 @@ RoCE 包格式：
     <br /><small>
     [RoCE 指南 - FS](https://community.fs.com/hk/article/roce-rdma-over-converged-ethernet.html)
 </small></figcaption></figure>
+
+#### Soft-RoCE
+
+基于 Socket 实现的 RoCE。
+
+```bash
+modprobe rdma_rxe
+rdma link add rxe_0 type rxe netdev <dev>
+```
+
+### iWARP
+
+#### Soft-iWARP
+
+内核模块名为 `siw`，同上。
 
 ---
 

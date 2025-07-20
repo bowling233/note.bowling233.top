@@ -2,9 +2,12 @@
 
 ## 构建
 
-### CentOS 下的多版本 gcc 管理
+### 多版本 gcc 管理
 
+CentOS
 https://blog.csdn.net/JasonZhao7/article/details/128159650
+
+与之类似地，Debian 中有 update-alternatives
 
 ## 调试
 

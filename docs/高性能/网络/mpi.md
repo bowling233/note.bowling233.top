@@ -16,7 +16,7 @@ OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表
 
 !!! quote
 
-    - [EasyBuild Tech Talks · easybuilders/easybuild Wiki](https://github.com/easybuilders/easybuild/wiki/EasyBuild-Tech-Talks-I:-Open-MPI)：2020 年的讲座，对 OpenMPI Z
+    - [EasyBuild Tech Talks · easybuilders/easybuild Wiki](https://github.com/easybuilders/easybuild/wiki/EasyBuild-Tech-Talks-I:-Open-MPI)：2020 年的讲座，对 OpenMPI 进行了全面的讲解。
     - [Open MPI head of development — Open MPI main documentation](https://docs.open-mpi.org/en/main/index.html)
     - [open-mpi/ompi: Open MPI main development repository](https://github.com/open-mpi/ompi)
 
@@ -90,8 +90,6 @@ OpenMPI 是一个大型项目，采用模块化组织，称为 MCA（Modular Com
 
 #### 通信库
 
-
-
 通信库主要通过 PML 选择。一般会采用如下组合：
 
 ```text
@@ -122,6 +120,16 @@ IB 和 RoCE 设备支持：
     ```
 
 #### PMIx
+
+**PMIx（Process Management Interface）**：用于与 `slurm` 这样的资源管理器（Resource Manager，RM）沟通。因为 PMI 的存在，我们能够直接使用 `srun` 运行 OpenMPI 程序，取得与 `mpirun` 等效的效果。
+
+MPI 与资源管理器可以通过三种方式交互：
+
+- Slurm 启动 MPI 并行程序，并通过 PMI API（Process Management Interface）调用执行初始化。
+- Slurm 分配资源，然后由 `mpirun` 基于 Slurm 的基础设施启动并行程序。`srun` 就是这种方式。
+- Slurm 分配资源，然后由 `mpirun` 通过 SSH 等其他机制启动并行程序。这种方式下，Slurm 无法进行资源管控和追踪。
+
+可以阅读 [Slurm: PMIx - Exascale Process Management Interface](https://slurm.schedmd.com/SLUG15/PMIx.pdf) 了解更多。
 
 #### ORTE 与 PRRTE
 
@@ -162,6 +170,12 @@ mpirun \
     --mca pml ob1/cm/ucx \
     --mca btl a,b,c \
 ```
+
+- OpenMPI 使用 Slot 作为资源分配单位，有多少个 Slot 就可以运行多少个进程。
+    - 默认：处理器核数。
+    - 使用超线程核心数：用 `--use-hwthread-cpus` 开启，常见为 2 倍处理器核数。可以在 `lscpu` 中的 `Thread(s) per core` 查看。
+    - 资源管理器调度：从资源管理器获取 Slot 数。
+    - 需要注意：Slot 数和硬件没有关系，可能比硬件核数多，也可能比硬件核数少。
 
 !!! example
 
@@ -220,6 +234,10 @@ MPICH 是 MVAPICH、Intel MPI 等众多 MPI 实现的基础。MPICH 维护四个
 
 ## MVAPICH
 
+!!! quote
+
+    - [The MVAPICH2 Project Latest Status and Future Plans](https://www.mpich.org/static/docs/slides/2021-sc-bof/MVAPICH2.pdf)：在 SC 21 进行的一次报告，介绍了 MVAPICH2 的最新进展和未来计划。
+
 这可能是目前最先进的 MPI 实现，受 NVIDIA 喜爱，并且也是神威 - 太湖之光所使用的 MPI 实现。
 
 MVAPICH 提供非常多种细分的版本，可根据需求选择。一般选用 MVAPICH2（源码分发）或 MVAPICH2-X（打包分发），提供最全面的 MPI 和 IB/RoCE 支持。
@@ -242,6 +260,139 @@ MVAPICH 提供非常多种细分的版本，可根据需求选择。一般选用
 MV2USERoCE=1 MV2USERDMACM=1
 # IB
 MV2_IBA=HCA=mlx4_0:mlx4_1
+```
+
+### OSU Benchmark
+
+!!! quote
+
+    - [Benchmarks - MVAPICH](https://mvapich.cse.ohio-state.edu/benchmarks/)
+
+## Intel MPI
+
+!!! quote
+
+    - [Intel MPI Library](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library.html#gs.pinwor)
+    - [Get Started](https://www.intel.com/content/www/us/en/develop/documentation/get-started-with-mpi-for-linux/top.html)
+    - [Developer Guides](https://www.intel.com/content/www/us/en/develop/documentation/mpi-developer-guide-linux/top.html)
+    - [Developer References](https://www.intel.com/content/www/us/en/develop/documentation/mpi-developer-reference-linux/top.html)
+    - [How to set up IntelMPI over RoCEv2 - HPC-Works - Confluence](https://hpcadvisorycouncil.atlassian.net/wiki/spaces/HPCWORKS/pages/156237831/How+to+set+up+IntelMPI+over+RoCEv2)
+    - [Intel® MPI Library 2019 Over Libfabric*](https://www.intel.com/content/www/us/en/developer/articles/technical/mpi-library-2019-over-libfabric.html)
+    - [Improve Performance and Stability with Intel® MPI Library on InfiniBand*](https://www.intel.com/content/www/us/en/developer/articles/technical/improve-performance-and-stability-with-intel-mpi-library-on-infiniband.html)
+
+### 运行与调试
+
+加载环境：
+
+- oneAPI：
+
+    ```bash
+    source /opt/intel/oneapi/setvars.sh
+    ```
+
+- IntelMPI（老版本）：具体路径可能有变化，仅作参考
+
+    ```bash
+    source intel2018/compilers_and_libraries_2018.3.222/linux/mpi/bin64/mpivars.sh
+    ```
+
+对 Intel MPI 来说，`mpirun` 是 `mpiexec.hydra` 的包装。其选项有全局选项和局部选项之分，一般以 `g` 开头的参数是全局选项，下文不对全局和局部选项分别介绍。可以编写文件保存选项，使用 `-configfile` 指定配置文件，`#` 注释。`./mpiexec.conf` 会自动加载。
+
+- 环境变量
+    - `-genv <ENVVAR> <val>` 指定运行时环境变量，常用的有：`OMP_`
+    - `-genvall, -genvnone` 控制是否传递环境变量
+- profiling:
+    - `-trace` `-aps` `-mps`
+- 设备：
+    - `-iface`
+- 运行参数：
+    - `-n, -np` 进程数
+    - `-env` 环境变量
+    - `-path` 可执行文件
+
+重要环境变量：
+
+```text
+
+```
+
+!!! tips `I_MPI_OFI_PROVIDER` 优先于 `FI_PROVIDER`。
+
+!!! tips "更多选项参阅 [Intel® MPI Library Developer Reference for Linux* OS](https://www.intel.com/content/www/us/en/docs/mpi-library/developer-reference-linux/2021-16/overview.html) 中的 Command Reference 和 Environment Variable Reference 章节。"
+
+日志输出：
+
+```bash
+mpirun \
+    -genv I_MPI_DEBUG 5 \
+    -genv I_MPI_HYDRA_DEBUG \
+    -v \
+```
+
+调试：
+
+!!! tips "调试器似乎不能和日志一起用，否则调试器命令输入会有问题。"
+
+- oneAPI：
+
+    ```bash
+    mpirun -n 4 -gtool "gdb-oneapi:0-3=attach" ./wrf_hydro.exe
+    # Using 'z' command you can switch active processes.
+    # e.g.
+    # 0-3: (gdb) z 1-3
+    # 1-3: (gdb) b 53
+    # 1-3: Breakpoint 2 at 0x4009f3: file test.c, line 53.
+    # 1-3: (gdb) z
+    # 0-3: (gdb) r
+    # 0-3: Continuing.
+    ```
+
+- Intel MPI:
+
+    ```bash
+    mpirun \
+        -gdb \
+    ```
+
+### IMB Benchmark
+
+!!! quote
+
+    - [Intel MPI Benchmarks User Guide](https://www.intel.com/content/www/us/en/develop/documentation/imb-user-guide/top.html)
+    - [:simple-github: intel/mpi-benchmarks](https://github.com/intel/mpi-benchmarks)
+
+Intel® MPI Benchmarks 包含以下**组件**：
+
+- [IMB-MPI1](https://www.intel.com/content/www/us/en/develop/documentation/imb-user-guide/top/mpi-1-benchmarks.html) – 用于 MPI-1 功能的基准测试。
+- 用于 [MPI-2](https://www.intel.com/content/www/us/en/develop/documentation/imb-user-guide/top/mpi-2-benchmarks.html) 功能的组件：
+    - IMB-EXT – 单边通信基准测试。
+    - IMB-IO – 输入/输出基准测试。
+- 用于 [MPI-3](https://www.intel.com/content/www/us/en/develop/documentation/imb-user-guide/top/mpi-3-benchmarks.html) 功能的组件：
+    - IMB-NBC – **非阻塞集合（non-blocking collective，NBC）** 操作的基准测试。
+    - IMB-RMA – 单边通信基准测试。这些基准测试测量 MPI-3 标准中引入的**远程内存访问（Remote Memory Access，RMA）** 功能。
+    - IMB-MT – 在每个 rank 内运行的**多线程** 的 MPI-1 功能基准测试。
+
+使用方法见：
+
+- [Intel(R) MPI Benchmarks User Guide](https://www.intel.com/content/www/us/en/docs/mpi-library/user-guide-benchmarks/2021-8/overview.html)
+- [Command-line Control](https://www.intel.com/content/www/us/en/docs/mpi-library/user-guide-benchmarks/2021-8/command-line-control.html)
+
+一个简单的例子
+
+```bash
+mpirun -ppn 1 -f hostfile IMB-MPI1 > MPI1.log
+```
+
+要获取更多调试信息，请在运行前设置 `I_MPI_DEBUG`（可以设置为 `0` 到 `5`）。
+
+```bash
+I_MPI_DEBUG=1 mpirun -ppn 1 -f hostfile IMB-MPI1 > MPI1.log
+```
+
+下面的命令行在基准测试列表 `IMB-MPI1` 中只执行 `PingPong` 基准测试。
+
+```bash
+mpirun -ppn 1 -f hostfile IMB-MPI1 PingPong
 ```
 
 ## 其他 MPI 实现

@@ -69,7 +69,7 @@ extra_javascript:
   # mermaid
   - https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js
 extra_css:
-  - stylesheets/extra.css
+  - stylesheets/font.css
   - stylesheets/flink.css
   - stylesheets/neoteroi-mkdocs.css
   - stylesheets/custom.css

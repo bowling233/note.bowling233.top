@@ -32,3 +32,5 @@ mindmap
         人工智能<br/>Artificial Intelligence
             探索中
 ```
+
+[Requirements for Chinese Text Layout - 中文排版需求](https://www.w3.org/TR/clreq/)

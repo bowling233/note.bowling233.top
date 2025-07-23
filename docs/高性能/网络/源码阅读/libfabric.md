@@ -49,7 +49,7 @@ libfabric 仓库的 README 文件详细说明了现有的各类 Providers。
 
 !!! tip "libfabric 在文档方面比 OpenMPI 和 UCX 做的都好"
 
-## 使用
+## 编程
 
 libfabric 有完善的使用教程。我们先总结 [fi_setup(7)](https://ofiwg.github.io/libfabric/v1.20.2/man/fi_setup.7.html) 中的要点，然后以 `fi_pingpong` 的源码为例具体分析。
 
@@ -114,13 +114,17 @@ libfabric 有完善的使用教程。我们先总结 [fi_setup(7)](https://ofiwg
     - **错误处理**:
         - `pp_process_eq_err`: 处理事件队列错误（调用 `fi_eq_readerr`）
 
+## 运行
+
+```bash
+export FI_LOG_LEVEL=debug
+export FI_PROVIDER=verbs
+./fi_pingpong
+```
+
 ## 源码阅读
 
 libfabric 版本数宏定义写在 `include/rdma/fabric.h` 中。
-
-### 调试
-
-环境变量 `FI_LOG_LEVEL=debug`
 
 ### 类型系统
 
@@ -147,7 +151,7 @@ struct fi_provider vrb_prov = {
 };
 ```
 
-Fabric 创建时，Provider 的选择在 `fi_fabric()` 中通过字符串匹配完成，获得对应的 `fi_provider` 结构，转交给 `.fabric` 成员：
+Fabric 创建时，`fi_fabric()` 通过 `ofi_getprov()` 字符串匹配获得对应的 `fi_provider` 实例。剩余的任务转交给该 Provider 的 `.fabric` 成员：
 
 ```c title="src/fabric.c"
 struct ofi_prov {
@@ -168,7 +172,7 @@ int DEFAULT_SYMVER_PRE(fi_fabric)(struct fi_fabric_attr *attr,
 }
 ```
 
-`vrb_fabric()` 调用 `ofi_fabric_init()` 进行通用初始化，然后做一些 Vrb 特有的设置：
+以 Verbs Provider 为例，`vrb_fabric()` 首先调用 `ofi_fabric_init()` 进行通用初始化，然后做一些 Verbs 特有的设置，其中最重要的是设置 fabric 的函数表：
 
 ```c title="prov/verbs/src/verbs_domain.c"
 int vrb_fabric(struct fi_fabric_attr *attr, struct fid_fabric **fabric,
@@ -233,7 +237,7 @@ static struct fi_ops_domain vrb_msg_domain_ops = {
 
 众所周知，Verbs 是一套通用的 API，而底层设备能支持的功能可能是受限的。
 
-调用链：`fi_getinfo` -> `prov->provider->getinfo` -> `vrb_get_info()` -> `vrb_get_match_infos(raw_info: vrb_util_prov.info)` -> `vrb_get_matching_info(verbs_info: raw_info)` -> `check_info: verbs:info`。
+调用链：`fi_getinfo` -> `prov->provider->getinfo` -> `vrb_getinfo()` -> `vrb_get_match_infos(raw_info: vrb_util_prov.info)` -> `vrb_get_matching_info(verbs_info: raw_info)` -> `check_info: verbs:info`。
 
 其中，设备列表的传递：
 
@@ -486,3 +490,23 @@ static int vrb_ep_bind(struct fid *fid, struct fid *bfid, uint64_t flags) {
 这里的 `struct vrb_srx` 是怎么来的呢？是通过 `fi_srx_context()` 创建的，它转交给 `domain->ops->srx_ctx`，即 `vrb_srq_context()`，该函数负责调用 `ibv_create_srq()`。
 
 在源码中，暂时没有看见自动创建 Shareable Receive Context 的地方，推测这里包装为 `fi_srx_context()` 接口应该是把选择权留给用户了，默认并不启用 SRQ（XRC 除外，未仔细查看是否会自动分配）。
+
+### Verbs Provider
+
+#### IFACE 与 DEVICE
+
+Verbs 使用 RDMACM 建链，需要使用 `rdma_bind_addr()` 绑定到相关的网络接口。因此有 `vrb_getifaddrs()` 来查询接口信息。
+
+现在我们来排查一下该函数找不到 IB 设备的网络接口的问题。已知传递给该函数的 IB 设备列表中有 `mlx5_bond_0`，使用 `show_gids` 可以看到对应网络接口为 `bond0`，但该函数没有找到该接口。
+
+```text
+vrb_getifaddrs()
+ofi_getifaddrs() src/common.c
+getifaddrs() /usr/include/ifaddrs.h
+```
+
+使用 `getifaddrs(3)` 帮助页的示例代码，确实有返回 `bond0` 接口。接下来看该函数如何处理这些接口。
+
+
+
+

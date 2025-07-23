@@ -1,16 +1,29 @@
 # MPI
 
+!!! note
+
+    - 使用容器运行 MPI 程序，见 [Apptainer]()。
+
 OpenMPI 和 MPICH 是最主要的 MPI 实现，后者衍生版本众多。下表对比了常见的 MPI 实现。
 
-| 对比项 | OpenMPI | MVAPICH | Intel MPI | MPICH | HPC-X | Platform MPI | Spectrum MPI |
-| - | - | - | - | - | - | - | - |
-| 历史 | [History of Open MPI](https://docs.open-mpi.org/en/main/history.html)<br>2003<br>由 OSU、LANL、UTK 的 MPI 实现合并而来 | [overview of the mvapich project](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/2015/mug15-overview_of_the_mvapich_project-dk_panda.pdf)<br>2002<br>OSU 开发，衍生自 MPICH | （来自 Wikipedia）衍生自 MPICH | [MPICH Overview](https://www.mpich.org/about/overview/)<br>2001<br>由 ANL 和 MSU 开发 | []<br><br>打包自 OpenMPI | IBM 闭源 | IBM 闭源 |
-| 文档 | [Open MPI main documentation](https://docs.open-mpi.org/en/main/) | [MVAPICH :: UserGuide](http://mvapich.cse.ohio-state.edu/userguide/) | [Intel® MPI Library Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html) | [Guides \| MPICH](https://www.mpich.org/documentation/guides/) | | | |
-| mpirun 指向 | `prun`(v5.x)<br>`orterun`(v4.x) | `mpiexec.hydra`<br>`mpiexec.mpirun_rsh`（推荐） | `mpiexec.hydra` | hydra（默认）<br>gforker（编译选项） || | |
-| Host 选项 | <pre>-H/--host node1:1,node1:1<br>--hostfile hf</pre> | <pre>-np 2 node1 node2<br>-hostfile hf</pre> | <pre>-hosts node1:1,node2:1<br>-f/-hostfile/-machine/-machinefile hf</pre> | `-f hf`|| | |
-| Hostfile 格式 | `node1 slots=n` | `node1:n:hca1` | `node1:n` | `node1:n`|| | |
-| 例程/测试 | examples/ | OSU Benchmark | Intel MPI Benchmark | exmaples/<br>`make testing` | OSU Benchmark<br>IMB<br>examples | mpitool | |
-| 信息 | `ompi_info --all` | `mpiname -a` | | `mpiexec -info` | | | |
+|    对比项     |                                                                                     OpenMPI                                                                                      |                                                                                              MVAPICH                                                                                               |                                                             Intel MPI                                                             |                                         MPICH                                         |              HPC-X               | Platform MPI | Spectrum MPI |     |     |     |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------------------------------- | ------------ | ------------ | --- | --- | --- |
+| 历史          | [History of Open MPI](https://docs.open-mpi.org/en/main/history.html)<br>2003<br>由 OSU、LANL、UTK 的 MPI 实现合并而来                                                           | [overview of the mvapich project](https://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/2015/mug15-overview_of_the_mvapich_project-dk_panda.pdf)<br>2002<br>OSU 开发，衍生自 MPICH | （来自 Wikipedia）衍生自 MPICH                                                                                                    | [MPICH Overview](https://www.mpich.org/about/overview/)<br>2001<br>由 ANL 和 MSU 开发 | []<br><br>打包自 OpenMPI         | IBM 闭源     | IBM 闭源     |     |     |     |
+| 文档          | [Open MPI main documentation](https://docs.open-mpi.org/en/main/)                                                                                                                | [MVAPICH :: UserGuide](http://mvapich.cse.ohio-state.edu/userguide/)                                                                                                                               | [Intel® MPI Library Documentation](https://www.intel.com/content/www/us/en/developer/tools/oneapi/mpi-library-documentation.html) | [Guides \ MPICH](https://www.mpich.org/documentation/guides/)                         |                                  |              |              |     |     |     |
+| mpirun 指向   | `prun`(v5.x)<br>`orterun`(v4.x)                                                                                                                                                  | `mpiexec.hydra`<br>`mpiexec.mpirun_rsh`（推荐）                                                                                                                                                    | `mpiexec.hydra`                                                                                                                   | hydra（默认）<br>gforker（编译选项）                                                  |                                  |              |              |     |     |     |
+| Host 选项     | `-H/--host node1:1,node1:1<br>--hostfile hf`                                                                                                                                     | `-np 2 node1 node2<br>-hostfile hf`                                                                                                                                                                | `-hosts node1:1,node2:1<br>-f/-hostfile/-machine/-machinefile hf`                                                                 | `-f hf`                                                                               |                                  |              |              |     |     |     |
+| Hostfile 格式 | `node1 slots=n`                                                                                                                                                                  | `node1:n:hca1`                                                                                                                                                                                     | `node1:n`                                                                                                                         | `node1:n`                                                                             |                                  |              |              |     |     |     |
+| 例程/测试     | examples/                                                                                                                                                                        | OSU Benchmark                                                                                                                                                                                      | Intel MPI Benchmark                                                                                                               | exmaples/<br>`make testing`                                                           | OSU Benchmark<br>IMB<br>examples | mpitool      |              |     |     |     |
+| 信息          | `ompi_info --all`                                                                                                                                                                | `mpiname -a`                                                                                                                                                                                       | `impi_info`                                                                                                                       | `mpiexec -info`                                                                       |                                  |              |              |     |     |     |
+| 环境变量      | [`--mca mca_base_env_list VAR1,VAR2,...`<br>`OMPI_*` 自动导出<br>`-x` 已弃用](https://docs.open-mpi.org/en/v5.0.x/man-openmpi/man1/mpirun.1.html#exported-environment-variables) | [`-export` 不覆盖<br>`-export-all` 全覆盖](http://mvapich.cse.ohio-state.edu/static/media/mvapich/mvapich2-userguide.html#x1-550006.2)                                                             |                                                                                                                                   |                                                                                       |                                  |              |              |     |     |     |
+| （模板）      | ``                                                                                                                                                                               | ``                                                                                                                                                                                                 | ``                                                                                                                                | ``                                                                                    | ``                               | ``           | ``           |     |     |     |
+
+MPI 间的 ABI 兼容性信息见：
+
+- [MPICH ABI Compatibility Initiative | MPICH](https://www.mpich.org/abi/)：MPICH、Intel MPI、MVAPICH2
+- [Hammond MPI ABI for MUG 2023](http://mug.mvapich.cse.ohio-state.edu/static/media/mug/presentations/23/HammondMPIABIforMUG2023.pdf)
+
+    似乎在 2023 后，MPICH 和 OpenMPI 家族开始着手统一 ABI 了。
 
 ## OpenMPI
 
@@ -232,6 +245,23 @@ MPICH 是 MVAPICH、Intel MPI 等众多 MPI 实现的基础。MPICH 维护四个
     - `ch3` 意思是 3rd version of Channel interface。通过编译时 `--with-device=ch3:channel:module` 可选组件。`nemesis` 是默认 channel，单节点用 shared-memory，跨节点用 socket。
     - 默认：`ch4`，支持的 module 有 ofi、UCX、POSIX 共享内存。
 
+### 构建和运行
+
+```bash
+./configure \
+    --enable-g=all \
+    --enable-debuginfo \
+```
+
+### Hydra
+
+```bash
+-verbose \
+-print-all-exitcodes \
+-prepend-rank \
+-profile \
+```
+
 ## MVAPICH
 
 !!! quote
@@ -250,10 +280,27 @@ MVAPICH 提供非常多种细分的版本，可根据需求选择。一般选用
 
 ### 构建和运行
 
+日志输出需要在构建时开启：
+
 ```bash
 ./configure --enable-g=all --enable-error-messages=all \
     --enable-debuginfo
 ```
+
+```bash
+mpirun_rsh \
+    MV2_HOMOGENEOUS_CLUSTER=1 \
+    MV2_SHOW_ENV_INFO=2 \
+    MV2_DEBUG_FORK_VERBOSE=2 \
+    MV2_DEBUG_CORESIZE=unlimited \
+    MV2_DEBUG_FT_VERBOSE=1 \
+    MV2_DEBUG_SHOW_BACKTRACE=1 \
+    MV2_DEBUG_MEM_USAGE_VERBOSE=2 \
+    MV2_USE_RoCE=1 MV2_DEFAULT_GID_INDEX=3 MV2_USE_RDMA_CM=0 \
+    build/default/libexec/osu-micro-benchmarks/mpi/pt2pt/osu_bw
+```
+
+网络接口选择：
 
 ```bash
 # RoCE
@@ -313,7 +360,7 @@ MV2_IBA=HCA=mlx4_0:mlx4_1
 重要环境变量：
 
 ```text
-
+-genv I_MPI_DEBUG 5 \
 ```
 
 !!! tips `I_MPI_OFI_PROVIDER` 优先于 `FI_PROVIDER`。
@@ -403,5 +450,18 @@ mpirun -ppn 1 -f hostfile IMB-MPI1 PingPong
 
 它使用一个同样古老的通信库 [DATL（Direct Access Transport Libraries）](https://www.openfabrics.org/downloads/dapl/README.html)，已于 2016 年停止支持。
 
+运行命令例：
 
+```bash
+export MPI_IB_STRINGS=cnic_0:1
+export MPI_IC_ORDER="UDAPL"
 
+bin/mpirun \
+    -np 2 \
+    -hostfile hostfile \
+    -d -v \
+    -UDAPL \
+    -netaddr 11.83.209.4 \
+    -- \
+    bin/mpitool -ppr 10000
+```

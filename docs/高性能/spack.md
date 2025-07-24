@@ -405,6 +405,14 @@ Package 类的代码有这么几类：
     setup_dependent_run_environment(env, dependent_spec)
     ```
 
+    根据 Spack 文档，这些环境会在依赖间递归维护。比如有下列依赖链：
+
+    ```text
+    my-pkg -(build)-> autoconf -(run)> perl
+    ```
+
+    那么 perl 的运行时环境会被设置到 my-pkg 的构建环境中。
+
 Spack 安装软件包的大致过程：
 
 - Fetch
@@ -417,6 +425,12 @@ Spack 安装软件包的大致过程：
     - configure
     - build
     - install
+
+!!! tips
+
+    ```bash
+    spack location --package-dir gmp
+    ```
 
 !!! tips "调试构建环境"
 
@@ -493,3 +507,212 @@ export
 
     - 如果 rootfs 中不存在 `/etc/pki` 应当先创建然后挂载
     - 写权限用于 `/opt` 中的 spack 锁文件
+
+## 源码阅读
+
+!!! quote
+
+    - [Developer Guide — Spack 1.1.0.dev0 documentation](https://spack.readthedocs.io/en/latest/developer_guide.html#code-structure)
+
+如果需要修复的问题比较深入，涉及基础的构建类，可能需要了解一些 Spack 源码的知识。
+
+### 环境配置
+
+Spack 的 Python 源码位于 `lib/spack` 下，包名为 `spack`。此外，`spack-packages` 仓库内含有包名为 `spack_repo` 的模块。将这两个仓库 clone 到本地，修改 `pyproject.toml`，安装到自己的 Python 环境中即可开始调试。
+
+### 包解析和依赖注入
+
+`spack install` 的命令入口为 `lib/spack/spack/cmd/install.py` 的 `install()` 函数，它根据当前是否为 Environment 而分为不同的处理流程。对于 Environment 的情况，需要修改环境相关状态。
+
+下面按非 Environment 的 `install_without_active_env()` 进行分析：
+
+- `concrete_specs_from_cli()`：得到 concrete spec
+- `PackageInstaller()`：构造函数
+    - 为每个 package 生成 `BuildRequest`，按依赖关系成 DAG
+- `PackageInstaller()._install()`
+    - `self._init_queue()` 将所有 `BuildRequest` 加入队列
+        - `_add_tasks()` 确保该包的依赖不是失败的
+            - `_add_init_task()` **构造任务**（`BuildTask` 或 `RewireTask`）
+                - `self._push_task()` 正式加入队列
+        - `while` 循环启动队列中的任务
+            - `self.start_task()`
+                - `task.start()`：**启动任务**
+            - `self.complete_task()`
+
+以 `BuildTask` 为例，它的 `start()` 做了下面这些事：
+
+- 软件包在构造时存入 `self.pkg`
+- 构造 `pkg.stage`
+- 启动安装过程：
+
+    ```python
+    spack.build_environment.start_build_process(
+        self.pkg, build_process, self.request.install_args
+    )
+    ```
+
+该函数构造一个 `BuildProcess` 对象，并调用 `.start()` 开始构建。
+
+- `BuildProcess` 本身是 `multiprocessing.Process` 的包装，它的 `.start()` 就是 `Process.start()`。
+
+    ```python
+    p = BuildProcess(
+        target=_setup_pkg_and_run,
+        args=(
+            serialized_pkg,
+            function,
+            kwargs,
+            write_pipe,
+            input_fd,
+            jobserver_fd1,
+            jobserver_fd2,
+        ),
+        read_pipe=read_pipe,
+        timeout=timeout,
+        pkg=pkg,
+    )
+    self.p = multiprocessing.Process(target=target, args=args)
+    ```
+
+- `_setup_pkg_and_run()` 就是构建进程的入点
+
+    - 修改环境
+
+        ```python
+        kwargs["env_modifications"] = setup_package(
+                pkg, dirty=kwargs.get("dirty", False), context=Context.from_string(context)
+            )
+        ```
+
+        向下调用直到 `setup_context.get_env_modifications()`，该函数追踪依赖链链完成环境注入：
+
+        ```python
+        for dspec, flag in chain(self.external, self.nonexternal):
+            for root in self.specs:  # there is only one root in build context
+                        spack.builder.create(pkg).setup_dependent_build_environment(env, root)
+
+            if self.should_setup_build_env & flag:
+                spack.builder.create(pkg).setup_build_environment(env)
+        ```
+
+    - 调用传入的 `function(pkg, kwargs)` 执行具体任务。这个 `function` 是 `build_process`，它做了这些事：
+
+        ```python
+        installer = BuildProcessInstaller(pkg, install_args)
+        installer.run()
+        ```
+
+### 构建进程
+
+`run()` 分为几个阶段：
+
+- `self.pkg.do_stage()` 下载和解压
+- `self._install_source()` 可选地安装源码包
+- `self._real_install()`
+    - `builder = spack.builder.create(pkg)`：
+
+        这个函数十分重要，Spack 的[开发者手册](https://spack.readthedocs.io/en/latest/developer_guide.html#package-class-architecture) 正是从这里开始介绍。
+
+        在 `_create()` 中，具体执行这些内容：
+
+        - 识别 pkg 的 buildsystem
+        - 从全局字典获得对应的 builder class 名称
+
+            全局构建器由 `spack-packages/repos/spack_repo/builtin/build_systems/` 中的 Builder 类使用 `@register_builder` Decorator 注册。
+
+        - 从 `pkg.module.<name>` 获得该 Package 对应的 Builder 实例
+
+        以 Autotools 为例，其 Package 和 Builder 定义如下：
+
+        ```python
+        class AutotoolsPackage(PackageBase):
+            build_system("autotools")
+        @register_builder("autotools")
+        class AutotoolsBuilder(BuilderWithDefaults):
+            phases = ("autoreconf", "configure", "build", "install")
+            def autoreconf():
+            def configure():
+            def build():
+                pkg.module.make(*params)
+            def install():
+        ```
+
+        再看 `Builder` 基类的构造函数，需要注意它是一个可迭代对象，并注意迭代返回的是 `InstallationPhase` 对象：
+
+        ```python
+        class Builder(BaseBuilder, collections.abc.Sequence):
+            def __init__(self, pkg: spack.package_base.PackageBase) -> None:
+                super().__init__(pkg)
+                self.callbacks = {}
+                for phase in self.phases:
+                    self.callbacks[phase] = InstallationPhase(phase, self)
+            def __getitem__(self, idx):
+                key = self.phases[idx]
+                return self.callbacks[key]
+        ```
+
+        - 如果是自定义构建器，将进入较为复杂的 Adapter 构建过程
+
+    - `for i, phase_fn in enumerate(builder) phase_fn.execute()`：逐阶段执行构建过程，执行的就是 `InstallationPhase.execute()`。在这里，我们看到 `@run_after()` 等 Decorator 注册的回调函数是如何被执行的：
+
+        ```python
+        def execute(self):
+            pkg = self.builder.pkg
+            self._on_phase_start(pkg)
+
+            for callback in self.run_before:
+                callback(self.builder)
+
+            self.phase_fn(pkg, pkg.spec, pkg.prefix)
+
+            for callback in self.run_after:
+                callback(self.builder)
+
+            self._on_phase_exit(pkg)
+        def _select_phase_fn(self):
+            phase_fn = getattr(self.builder, self.name, None)
+        ```
+
+        也可以看到执行的 `phase_fn` 又是 `builder` 中对应的 `phase` 函数。在上面的 Autotools 类中，我们看到类需要实现自己定义的所有 phase。
+
+### 属性注入
+
+现在我们了解了构建进程的基本流程，接下来我们看看依赖注入是如何实现的。
+
+首先看执行命令的注入：上文中，我们看到 `build()` 阶段使用了 `make`，这个属性是在哪里注入的呢？
+
+如果在构建系统相关的源码中寻找，很难得到正确的思路。如果你看过构建系统相关的包，容易想起这些包都会在 `setup_dependent_pacakge()` 中设置 `module` 的属性：
+
+```python title="builtin/packages/automake"
+    def _make_executable(self, name):
+        return Executable(join_path(self.prefix.bin, name))
+
+    def setup_dependent_package(self, module, dependent_spec):
+        # Automake is very likely to be a build dependency,
+        # so we add the tools it provides to the dependent module
+        executables = ["aclocal", "automake"]
+        for name in executables:
+            setattr(module, name, self._make_executable(name))
+```
+
+当时看到觉得奇怪，不知道这些 Executable 的调用方式是什么。
+
+```python title="builtin/packages/gmake"
+    def setup_dependent_package(self, module, dspec):
+        module.make = MakeExecutable(
+            self.spec.prefix.bin.make,
+            jobs=determine_number_of_jobs(parallel=dspec.package.parallel),
+        )
+```
+
+### 示例问题分析
+
+接下来以 [Installation issue: MVAPICH2 Build Failure - `autom4te: not found` · Issue #723 · spack/spack-packages](https://github.com/spack/spack-packages/issues/723) 为例，分析 MVAPICH2 的构建过程中依赖是如何注入的。
+
+```python
+class Mvapich2(MpichEnvironmentModifications, AutotoolsPackage):
+    depends_on("automake@1.15", type="build")  # needed for torque patch
+class Automake(AutotoolsPackage, GNUMirrorPackage):
+    depends_on("autoconf", type="build")
+class Autoconf(AutotoolsPackage, GNUMirrorPackage):
+```

@@ -58,7 +58,8 @@ apptainer-suid-debuginfo-1.4.1-1.x86_64.rpm
 - Sections：具体的构建步骤
 
     ```text
-    %setup 构建前执行，比如设置挂载点 mkdir
+    %setup 构建前执行，比如设置挂载点，注意此处要用环境变量
+        mkdir $APPTAINER_ROOTFS/example
     %files 拷贝文件
         <src> [dst]
     %post 主要内容

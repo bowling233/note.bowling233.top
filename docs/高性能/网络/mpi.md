@@ -327,6 +327,10 @@ MV2_IBA=HCA=mlx4_0:mlx4_1
     - [Intel® MPI Library 2019 Over Libfabric*](https://www.intel.com/content/www/us/en/developer/articles/technical/mpi-library-2019-over-libfabric.html)
     - [Improve Performance and Stability with Intel® MPI Library on InfiniBand*](https://www.intel.com/content/www/us/en/developer/articles/technical/improve-performance-and-stability-with-intel-mpi-library-on-infiniband.html)
 
+```bash
+./intel-mpi*.sh -a --silent --cli --eula accept
+```
+
 ### 运行与调试
 
 加载环境：

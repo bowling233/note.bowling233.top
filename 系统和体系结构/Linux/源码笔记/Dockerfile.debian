@@ -1,0 +1,19 @@
+FROM debian:sid
+
+RUN cat > /etc/apt/sources.list.d/debian.sources <<EOF
+Types: deb deb-src
+URIs: https://mirrors.zju.edu.cn/debian/
+Suites: sid
+Components: main contrib non-free non-free-firmware
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+EOF
+
+RUN apt-get update && \
+    apt-get install -y \
+        ca-certificates \
+        gnupg \
+        lsb-release \
+        linux-source build-essential \
+        fakeroot devscripts rsync git \
+        linux-headers-amd64 && \
+    apt-get build-dep linux

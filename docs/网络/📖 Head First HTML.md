@@ -14,13 +14,39 @@ tags:
 
 ### 与 HTML 相关的操作
 
-- 在 HTML 内插入 CSS：将 CSS 放置在 HTML `<head>` 的 `<style>` 标签中。
-- 在 HTML 中链入 CSS 文件：`<link rel="stylesheet" href="xx.css">`，`type="text/css"` 在新的 HTML 标准中不再必要。
+内联 CSS 样式：
 
-    - `media="screen and (max-device-width: 480px)"` media 属性允许指定应用该样式表的设备类型。
-    - 设备可以是：`print`, `min-device-width`, `orientation(landscape, portrait)`, `max-width`
+```html
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: blue;
+        }
+    </style>
+</head>
+```
 
-    - 为了 **避免 CSS 文件过于庞大**，建议使用 `<link>` 指定不同的设备样式表。
+链接外部 CSS 文件：
+
+```html
+<head>
+    <!-- 基本链接 -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- 针对不同设备的样式表 -->
+    <link rel="stylesheet" href="mobile.css" media="screen and (max-device-width: 480px)">
+    <link rel="stylesheet" href="print.css" media="print">
+    <link rel="stylesheet" href="tablet.css" media="screen and (min-device-width: 481px) and (max-device-width: 1024px)">
+    <link rel="stylesheet" href="desktop.css" media="screen and (min-device-width: 1025px)">
+    
+    <!-- 横屏和竖屏样式 -->
+    <link rel="stylesheet" href="landscape.css" media="screen and (orientation: landscape)">
+    <link rel="stylesheet" href="portrait.css" media="screen and (orientation: portrait)">
+</head>
+```
 
 ### 内置规则
 
@@ -73,7 +99,7 @@ a:link {
 - `,` 分隔选择器
 - `.` 表示 class
 - `#` 表示 id
-- `` 表示子孙选择器。父元素可以是元素/id
+- ` ` 表示子孙选择器。父元素可以是元素/id
     - 这将选择所有指定的子孙元素，不管嵌套得多深
     - `>` 选择直接孩子
     - 更复杂的条件 `#elixirs blockquote h2`

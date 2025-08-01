@@ -38,7 +38,7 @@ tags:
     | `++`、`--` 或 `~~` | `++mpi` | 布尔类型选项，在依赖之间传递 |
     | `name=<value>` | `build_system=cmake` | 指定选项的值 |
     | `name==<value>` | `build_system==cmake` | 指定选项的值，在依赖之间传递 |
-    ｜ `<flag>=<flags>` | `cflags=-O3` | 特殊的编译器选项，如：`cflags`, `cxxflags`, `fflags`, `cppflags`, `ldflags`, and `ldlibs` |
+    | `<flag>=<flags>` | `cflags=-O3` | 特殊的编译器选项，如：`cflags`, `cxxflags`, `fflags`, `cppflags`, `ldflags`, and `ldlibs` |
 
     对于本地安装的 spec，还可以通过 `/` 哈希值来指定：
 
@@ -465,38 +465,19 @@ Spack 安装软件包的大致过程：
 
 ## 构建 Apptainer 镜像
 
-Spack 提供快捷的构建镜像的方式。同时，为了方便调试，我使用下面的脚本：
-
-```bash
-spack containerize > $1.def
-BUILD_FLAGS="
-    --bind ${SPACK_ROOT}/var/spack/cache:/opt/spack/var/spack/cache \
-    "
-if [ ! -d "${SPACK_ROOT}/var/spack/cache" ]; then
-    mkdir -p "${SPACK_ROOT}/var/spack/cache"
-fi
-
-if [ $DEBUG == "true" ]; then
-    BUILD_FLAGS+="--no-cleanup --sandbox ./sandbox"
-    if [ -d "./sandbox" ]; then
-        BUILD_FLAGS+="--update"
-    fi
-else
-    BUILD_FLAGS+="$1.sif"
-fi
-
-apptainer build $BUILD_FLAGS $1.def
-```
+Spack 提供快捷的构建镜像的方式。同时，为了方便调试，我使用下面的脚本：[spack.assets/build.sh](spack.assets/build.sh)。
 
 进入 sandbox 目录调试的流程一般如下：
 
 ```bash
 apptainer shell \
     --writable \
+    --bind ${SPACK_ROOT}/var/spack/cache:/opt/spack/var/spack/cache \
+    --bind /root/spack-packages:/spack-packages \
     --bind /etc/pki:/etc/pki \
     --shell bash \
     --pwd /opt/spack-environment \
-    ./build-temp-*/rootfs
+    build-temp-*/rootfs
 . /opt/spack/share/spack/setup-env.sh
 spack -e . build-env mvapich2 -- /bin/bash
 # 检查环境
@@ -507,6 +488,7 @@ export
 
     - 如果 rootfs 中不存在 `/etc/pki` 应当先创建然后挂载
     - 写权限用于 `/opt` 中的 spack 锁文件
+    - 同时构建多个容器可能会争抢 `/tmp` 中的锁，可以选择独立挂载 tmpfs 解决，但这也会导致构建失败时 stage 信息丢失。
 
 ## 源码阅读
 
@@ -716,3 +698,5 @@ class Automake(AutotoolsPackage, GNUMirrorPackage):
     depends_on("autoconf", type="build")
 class Autoconf(AutotoolsPackage, GNUMirrorPackage):
 ```
+
+开启 debug 信息，可以看到

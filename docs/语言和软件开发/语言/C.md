@@ -1,6 +1,9 @@
 # C
 
-[C reference - cppreference.com](https://cppreference.com/w/c.html)
+!!! quote
+
+    - [C reference - cppreference.com](https://cppreference.com/w/c.html)
+    - [ISO/IEC JTC1/SC22/WG14 - C](https://www.open-std.org/JTC1/SC22/WG14/)：公开的 C 语言标准草案。正式标准需要收费，但草案也够看了。
 
 ## 结构体
 

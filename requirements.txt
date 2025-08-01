@@ -4,3 +4,4 @@ neoteroi-mkdocs
 mkdocs-glightbox
 mkdocs-git-revision-date-localized-plugin
 mkdocs-drawio
+mkslides

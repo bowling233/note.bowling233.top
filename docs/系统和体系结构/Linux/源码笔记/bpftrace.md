@@ -4,6 +4,41 @@ bpftrace 仍处于开发阶段，有不少问题需要解决，也有不少功�
 
 《BPF Performance Tools》一书详细介绍了 bpftrace 的工作原理，本篇笔记在此基础上完成。
 
+## 环境
+
+!!! quote
+
+    感谢 @YooLc 提供的指导。
+
+bpftrace 仓库可以使用 Dev Container 方便地管理环境。打开 VSCode 面板，选择 DevContainer: Reopen in Container 即可自动开始配置。配置过程比较漫长，需要下载足足 5 GB 多的文件，这是 Nix 环境的通病。
+
+容器构建完成后，在项目目录 `nix develop` 就能进入有环境的 shell 了。在 DevContainer 的配置文件中，执行了这样一行命令：
+
+```bash
+nix develop -c true && direnv allow
+```
+
+这就是使用 direnv 的效果。项目使用 Nix Flake 来管理开发环境，配置文件为 `flake.nix`。
+
+Nix 通过 `pkgs.mkShell` 创建开发环境，其中 `buildInputs` 包含了所需的依赖项。项目封装了 `mkBpftraceDevShell` 函数，接受 `llvmVersion` 参数，可以创建基于不同 LLVM 版本的环境。
+
+可以使用以下命令切换不同的 LLVM 版本：
+
+```bash
+nix develop .#bpftrace-llvm20
+nix develop .#bpftrace-llvm19
+```
+
+这样就能在不同 LLVM 版本的环境中进行开发和测试。
+
+在 DevContainer 中，默认用户为 `vscode`，而部分测试要求以 `root` 身份运行。因此最好所有测试都在虚拟机内进行：
+
+```bash
+vmtest -k $(nix build --print-out-paths .#kernel-6_14)/bzImage -- make -C build-vscode test
+cd build-vscode/tests/
+vmtest -k $(nix build --print-out-paths .#kernel-6_14)/bzImage -- BPFTRACE_RUNTIME_TEST_EXECUTABLE=../src/bpftrace python3 -u runtime/engine/main.py --filter=btf.user_supplied_c_def_using_btf
+```
+
 ## 程序入口与核心数据结构
 
 1. `main.cpp` 初始化 `BPFtrace` 和 `PassManager`。
@@ -53,6 +88,8 @@ class ASTContext : public ast::State<"ast"> {
     Program *root = nullptr;
 }
 ```
+
+调用链如下：
 
 ```c
 main()
@@ -345,3 +382,118 @@ tracepoint:sched:sched_switch { $task = (struct task_struct *)curtask; if ($task
     ├── __stddef_max_align_t.h
     └── stdint.h
     ```
+
+### `stdint.h` 错误分析
+
+然而复测一下发现，Infiniband 头文件遇到了新的 `UINTMAX` 宏未定义的问题，该宏在 `stdint.h` 中。使用 `clang -H -E` 看到包含顺序如下：
+
+```text
+. /usr/include/infiniband/verbs.h
+.. /bpftrace/include/stdint.h
+... /usr/lib64/clang/17/include/stdint.h
+```
+
+在预处理器输出中能看到执行行数，从而推断进入位置：
+
+```text
+# 1 "/usr/include/infiniband/verbs.h" 1
+# 40 "/usr/include/infiniband/verbs.h"
+# 1 "/bpftrace/include/stdint.h" 1
+# 63 "/bpftrace/include/stdint.h"
+# 1 "/usr/lib64/clang/17/include/stdint.h" 1
+# 64 "/bpftrace/include/stdint.h" 2
+# 41 "/usr/include/infiniband/verbs.h" 2
+```
+
+bpftrace stdlib 通过下面的方式进入 Clang 头文件：
+
+```c
+/* If we're hosted, fall back to the system's stdint.h, which might have
+ * additional definitions.
+ */
+#if __STDC_HOSTED__ && __has_include_next(<stdint.h>)
+# include_next <stdint.h>
+#else
+// stdint.h 中的各类定义
+#endif
+```
+
+两份头文件都使用 `__CLANG_STDINT_H` 来保护，于是产生了这样的情况：
+
+- bpftrace stdlib 进入 `__has_include_next` 为真的分支，因此没有定义 stdint.h 中的宏
+- Clang 因为 bpftrace stdlib 已经定义头文件保护符，所以被整个跳过，也没有定义 stdint.h 中的宏
+
+头文件保护符一致，说明 bpftrace stdlib 的头文件也来自 clang。所以我不明白为什么 bpftrace 需要自己提供 stdlib。ClangParser 的注释解释了提供 Linux 头文件的原因：
+
+```text
+// We set these args early because some systems may not have
+// <linux/types.h> (containers) and fully rely on BTF.
+```
+
+但是 C 标准库头文件的情况不同，它应该在任何 C 开发环境下都有。
+
+目前，我通过将 bpftrace stdlib 的头文件保护符改为 `__STDINT_H` 来解决这个问题，但是这也有和其他 C 标准库实现冲突的风险。这里我列出 `src/stdlib/include` 中可能有风险的头文件：
+
+| 头文件 | 含有 `#include_next` | 头文件保护符前缀为 `__CLANG` |
+| - | - | - |
+| `float.h` | Y | N |
+| `limits.h` | Y | Y |
+| `stdint.h` | Y | Y |
+| `__stddef_max_align_t.h` | N | Y |
+
+如果我们必须提供自己的 C 标准库头文件实现，也许我们需要将保护符修改为 `__BPFTRACE` 前缀。我在这方面经验不多，希望能得到大家的意见。
+
+### `c_macro_expansion.cpp` 错误分析
+
+在移除 `stdint.h` 和 `limits.h` 后，其中的宏仍然不能正常展开，涉及到了宏展开的 Pass，报错如下：
+
+```text
+test.bt:5:29-40: ERROR: unable to expand macro as an expression: (18446744073709551615UL)
+    printf("SUCCESS %zu\n", UINTPTR_MAX); exit();
+                            ~~~~~~~~~~~
+```
+
+`CMacroExpansionPass` 就接在 `ClangParsePass` 后，让我们继续研究一下。报错来源于下面这段：
+
+```c
+// Parse just the macro as an expression.
+ASTContext macro(ident->ident, value);
+Driver driver(macro);
+auto expanded = driver.parse_expr();
+```
+
+构造了一个 AST 上下文让后直接调用 Driver 解析表达式：
+
+```c
+parse(Parser::make_START_EXPR(loc));
+if (std::holds_alternative<ast::Expression>(result)) {
+return std::get<ast::Expression>(result);
+}
+```
+
+这里 `parse` 是 YACC 解析器：
+
+```c
+void Driver::parse(Parser::symbol_type first_token)
+{
+  // Reset state on every pass.
+  loc.initialize();
+  struct_type.clear();
+  buffer.clear();
+
+  // Push the start token, which indicates that exact context that we should
+  // now be parsing.
+  token.emplace(first_token);
+
+  yyscan_t scanner;
+  yylex_init(&scanner);
+  Parser parser(*this, scanner);
+  if (debug) {
+    parser.set_debug_level(1);
+  }
+  set_source_string(&ctx.source_->contents);
+  parser.parse();
+  yylex_destroy(scanner);
+}
+```
+

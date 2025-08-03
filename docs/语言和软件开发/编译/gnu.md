@@ -1,10 +1,35 @@
 # GNU Compiler Collection
 
+- `cc1`：源码 -> 汇编
+
 ## GCC
 
 - [Invoking GCC (Using the GNU Compiler Collection (GCC))](https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html)
 
     - 具有开启/关闭的选项：`-f` 或 `-W` 开头，格式 `-foo`/`-fno-foo`。
+
+### [spec](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html)
+
+!!! quote
+
+    - [linking errors for stitch project (recompile with -fPIC)](https://groups.google.com/g/hugin-ptx/c/cbPR2c-6Ocw)
+
+除了命令行选项，还有一个隐蔽的东西会影响 GCC 及其组件的选项，那就是 spec。使用 `gcc -v` 时可以看到：
+
+```bash
+$ gcc -v
+Using built-in specs.
+Reading specs from /usr/lib/rpm/redhat/redhat-hardened-cc1
+```
+
+GCC 定制者（比如发行版）可以通过该文件强制 GCC 使用某些选项。比如，redhat 就强制要求 PIE：
+
+```text title="redhat-hardened-cc1"
+*cc1_options:
++ %{!r:%{!fpie:%{!fPIE:%{!fpic:%{!fPIC:%{!fno-pic:-fPIE}}}}}}
+```
+
+该 spec 可能在红帽系和
 
 ### PIE/PIC
 
@@ -26,3 +51,13 @@
     - **`-static-pie` 用于生成静态链接的 PIE 可执行文件**: 运行时完全独立，不需要动态链接器或目标系统的共享库，自身即可在任何地址运行。这是 `-static`（静态链接无位置无关）和 `-pie`（位置无关但需动态库）特性的结合。
 - **宏定义**：`__pic__`/`__PIC__` 用于 PIC；`__pie__`/`__PIE__` 用于 PIE。
 - **编译与链接选项配合**：使用 `-pie` 或 `-static-pie` 链接时，必须使用对应的 `-fpie` 或 `-fPIE`（或等效选项）编译所有源码对象。`-fpic`/`-fPIC` 编译的代码只能用于链接到共享库，不能用于 `-pie` 或 `-static-pie` 生成的可执行文件。
+
+这一坨选项呢，彼此之有千丝万缕的联系。如果此时遇到上面针对单个选项的 spec，就会遇到问题。基于 RedHat 上的 GCC 12，我们做下面的实验：:
+
+| gcc 参数 | gcc collect | cc1 collect |
+| - | - | - |
+| `-fno-PIE -fno-pic` | `-fno-pic` | `-fno-pic` |
+| `-fno-PIE -fno-pic -fno-PIC -fno-PIE` | `-fno-PIE` | `-fno-PIE -fPIE` |
+| `-fno-PIE -fno-pic -fno-PIC -fno-PIE` | `-fno-PIC` | `-fno-PIC -fPIE` |
+| `-fno-PIE -fno-pic -fno-PIE` | `-fno-PIE` | `-fno-PIE -fPIE` |
+| `-fno-PIE -fno-pic -fno-pic` | `-fno-pic` | `-fno-pic` |

@@ -168,6 +168,72 @@ flowchart TD
 - `post_send()`：Client 发送一个 write 操作，写入到 Server 的缓冲区。
 - Server 打印缓冲区内容，为 `RDMA write operation`。
 
+## 能力归纳
+
+梳理 IB Verbs 的全链路，各调用可能需要网卡提供不同的能力：
+
+- `ibv_reg_mr()` 访问控制：
+
+    ```c
+    enum ibv_access_flags {
+        IBV_ACCESS_LOCAL_WRITE		= 1,
+        IBV_ACCESS_REMOTE_WRITE		= (1<<1),
+        IBV_ACCESS_REMOTE_READ		= (1<<2),
+        IBV_ACCESS_REMOTE_ATOMIC	= (1<<3),
+        IBV_ACCESS_MW_BIND		= (1<<4),
+        IBV_ACCESS_ZERO_BASED		= (1<<5),
+        IBV_ACCESS_ON_DEMAND		= (1<<6),
+        IBV_ACCESS_HUGETLB		= (1<<7),
+        IBV_ACCESS_FLUSH_GLOBAL		= (1 << 8),
+        IBV_ACCESS_FLUSH_PERSISTENT	= (1 << 9),
+        IBV_ACCESS_RELAXED_ORDERING	= IBV_ACCESS_OPTIONAL_FIRST,
+    };
+    ```
+
+- `struct ibv_qp_init_attr`：
+
+    ```c
+    enum ibv_qp_type {
+        IBV_QPT_RC = 2,
+        IBV_QPT_UC,
+        IBV_QPT_UD,
+        IBV_QPT_RAW_PACKET = 8,
+        IBV_QPT_XRC_SEND = 9,
+        IBV_QPT_XRC_RECV,
+        IBV_QPT_DRIVER = 0xff,
+    };
+    ```
+
+- `struct ibv_send_wr->opcode`
+
+    ```c
+    const char *ibv_wr_opcode_str(enum ibv_wr_opcode opcode);
+    enum ibv_wr_opcode {
+        IBV_WR_RDMA_WRITE,
+        IBV_WR_RDMA_WRITE_WITH_IMM,
+        IBV_WR_SEND,
+        IBV_WR_SEND_WITH_IMM,
+        IBV_WR_RDMA_READ,
+        IBV_WR_ATOMIC_CMP_AND_SWP,
+        IBV_WR_ATOMIC_FETCH_AND_ADD,
+        IBV_WR_LOCAL_INV,
+        IBV_WR_BIND_MW,
+        IBV_WR_SEND_WITH_INV,
+        IBV_WR_TSO,
+        IBV_WR_DRIVER1,
+        IBV_WR_FLUSH = 14,
+        IBV_WR_ATOMIC_WRITE = 15,
+    };
+    ```
+
+- 
+
 ## SRQ
 
 SRQ 作为 `struct ibv_qp_init_attr` 中的一个**可选**字段。
+
+## `ibv_wr_*`
+
+
+
+## `*_ex`

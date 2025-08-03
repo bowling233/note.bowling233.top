@@ -22,5 +22,7 @@
 ## ddeb
 
 https://wiki.debian.org/AutomaticDebugPackages
+https://www.debian.org/doc/manuals/debmake-doc/ch10.en.html#dbgsym
 
 https://docs.fedoraproject.org/en-US/packaging-guidelines/Debuginfo/
+

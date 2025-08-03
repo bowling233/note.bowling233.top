@@ -391,4 +391,21 @@ modpost: $(if $(single-build),, $(if $(KBUILD_BUILTIN), vmlinux.o)) \
 7. **模块构建的阶段性**：
    - 该文件是模块构建的第二阶段，第一阶段生成 `.o` 文件和 `.mod` 文件，第二阶段通过 `modpost` 处理这些文件。
 
+值得一提的是，该阶段部分文件使用的 FLAGS 又不同了。以 `.mod.o` 为例：
 
+```makefile title="scripts/Makefile.modfinal"
+quiet_cmd_cc_o_c = CC [M]  $@
+      cmd_cc_o_c = $(CC) $(filter-out $(CC_FLAGS_CFI) $(CFLAGS_GCOV), $(c_flags)) -c -o $@ $<
+
+%.mod.o: %.mod.c FORCE
+	$(call if_changed_dep,cc_o_c)
+```
+
+不一致的是 modkern_cflags
+
+```makefile
+modkern_cflags =                                          \
+	$(if $(part-of-module),                           \
+		$(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
+		$(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL) $(modfile_flags))
+```

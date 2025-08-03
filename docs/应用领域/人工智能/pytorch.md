@@ -18,7 +18,6 @@ forward() → autograd.Function → C++算子
 
 ### torch.multiprocessing
 
-
 ### torch.distributed
 
 该模块用于多机分布式训练。它将相互协作的进程组成 ProcessGroup，提供集合通信和点对点通信的能力。未指定时，集合通信发生在默认的 PG，称为 world。
@@ -96,11 +95,11 @@ c10::intrusive_ptr<Work> ProcessGroupNCCL::collective(
     auto work = initWork(
         device, rank_, opType, false, profilingTitle, inputs, outputs, enqueue);
 
-	C10D_NCCL_CHECK(
+    C10D_NCCL_CHECK(
         fn(inputs[0], outputs[0], comm, ncclStream),
         ncclComm->getNcclCommFailureReason());
       
-	workEnqueue(work);
+    workEnqueue(work);
 ```
 
 #### 超时检测
@@ -164,4 +163,3 @@ std::shared_ptr<NCCLComm> NCCLComm::create(
 ```
 
 调用转交给了 `ncclCommInitRank()`。
-

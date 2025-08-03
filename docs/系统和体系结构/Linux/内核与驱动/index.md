@@ -1,5 +1,9 @@
 # 构建
 
+## 辅助工具
+
+- [Linux source code - Bootlin Elixir Cross Referencer](https://elixir.bootlin.com/linux)：在这里对比多版本源码比 GitHub 方便些。
+
 ## 获取源码
 
 - Git
@@ -84,7 +88,7 @@ ccflags-y += -Wall
 
 除了 `obj-`，内核也识别 `<module>-`、`ccflags-` 和 `ldflags-` 等。
 
-### 模块构建
+### 模块构建过程
 
 我们知道模块构建需要传递 `M=` 参数，内核 Makefile 会这样处理：
 
@@ -114,6 +118,32 @@ KBUILD_MODULES := 1
 build-dir := $(KBUILD_EXTMOD)
     # 模块构建...
 endif # KBUILD_EXTMOD
+
+# 定义 modules 目标，依赖链：__all -> modules -> modpost 
+# -> modules_check -> MODORDER -> build-dir -> 递归构建
+PHONY += modules modules_install modules_sign modules_prepare
+export MODORDER := $(extmod_prefix)modules.order
+ifdef CONFIG_MODULES # 内核开启了 CONFIG_MODULES
+$(MODORDER): $(build-dir)
+	@:
+modules: modpost
+ifneq ($(KBUILD_MODPOST_NOFINAL),1)
+	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modfinal
+endif
+PHONY += modules_check
+modules_check: $(MODORDER)
+	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/modules-check.sh $<
+else # 如果内核未开启 CONFIG_MODULES，则不构建 modules 目标
+modules:
+	@:
+KBUILD_MODULES :=
+endif # CONFIG_MODULES
+
+# 定义结束目标
+PHONY += modpost
+modpost: $(if $(single-build),, $(if $(KBUILD_BUILTIN), vmlinux.o)) \
+	 $(if $(KBUILD_MODULES), modules_check)
+	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
 
 # 从 build-dir 开始启动递归构建
 PHONY += $(build-dir)
@@ -322,3 +352,43 @@ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
     endif
     endif
     ```
+
+### modpost 和 modules_check
+
+回顾：
+
+```makefile title="Makefile"
+modpost: $(if $(single-build),, $(if $(KBUILD_BUILTIN), vmlinux.o)) \
+	 $(if $(KBUILD_MODULES), modules_check)
+	$(Q)$(MAKE) -f $(srctree)/scripts/Makefile.modpost
+```
+
+`Makefile.modpost` 负责的功能包括：模块的版本信息、符号依赖关系以及模块的 CRC 校验等。
+
+1. **模块版本信息生成**：
+   - 通过 `modpost` 工具生成 `<module>.mod.c` 文件，其中包含模块的版本信息（如 `MODULE_VERSION`、`MODULE_ALIAS`、`MODULE_LICENSE` 等）。
+   - 这些信息会被嵌入到模块的 ELF 段中，供内核加载时使用。
+
+2. **符号依赖与版本控制**：
+   - 生成 `Module.symvers` 文件，记录所有导出符号的 CRC 值，用于模块间的版本控制。
+   - 如果启用了 `CONFIG_MODVERSIONS`，还会处理符号版本信息，确保模块间的兼容性。
+
+3. **依赖关系处理**：
+   - 读取 `modules.order` 文件，获取所有模块的构建顺序和依赖关系。
+   - 如果某些输入文件缺失（如 `vmlinux.o` 或 `Module.symvers`），会发出警告，但不会中断构建（除非显式设置 `KBUILD_MODPOST_WARN=1`）。
+
+4. **特殊配置支持**：
+   - 支持 `CONFIG_TRIM_UNUSED_KSYMS`，通过白名单过滤未使用的内核符号。
+   - 支持外部模块构建（`KBUILD_EXTMOD`），允许从外部目录加载额外的符号信息（`KBUILD_EXTRA_SYMBOLS`）。
+
+5. **错误处理与警告**：
+   - 如果某些输入文件缺失，会输出警告信息，但默认情况下不会终止构建。
+   - 可以通过设置 `KBUILD_MODPOST_WARN=1` 将错误降级为警告。
+
+6. **性能优化**：
+   - 通过 `-T` 参数传递 `modules.order` 文件，避免因参数过长导致的性能问题。
+
+7. **模块构建的阶段性**：
+   - 该文件是模块构建的第二阶段，第一阶段生成 `.o` 文件和 `.mod` 文件，第二阶段通过 `modpost` 处理这些文件。
+
+

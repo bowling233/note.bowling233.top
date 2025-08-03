@@ -46,6 +46,9 @@
     - Protection Domain：安全性，阻止 AH、QP 和 MR 等资源的跨 PD 互访
     - Address Handle：地址指 GID、端口号和 MAC 地址等，UD 通过 AH 索引地址信息
     - Queue Pair、Completion Queue
+- 网络结构：
+    - Global Routing Header：
+        - RoCE 网络必须
 - 高级话题：
     - SRQ：
         - RC/UC/UD 接收方必须预先下发足够多的 WQE，造成大量 RQ 浪费，通过共享节省内存
@@ -716,8 +719,6 @@ for (offset = 0; offset < size; ) {
 
 !!! quote
 
-
-
 ### 注册内存区域
 
 RDMA 通信前，需要先注册内存区域 **MR（memory region）**，供 RDMA 设备访问：
@@ -801,6 +802,8 @@ ib_send_bw
 ## 通信框架
 
 ### NCCL
+
+- [[2507.04786] Demystifying NCCL: An In-depth Analysis of GPU Communication Protocols and Algorithms](https://arxiv.org/abs/2507.04786)
 
 ### HCCL
 

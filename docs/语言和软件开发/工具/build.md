@@ -152,7 +152,7 @@ CMake 文档并没有对 `CMAKE_BUILD_TYPE` 的行为进行明确说明，因为
 grep '_FLAGS' CMakeCache.txt | grep -v -E '/|INTERNAL'
 ```
 
-## Meson
+### Meson
 
 使用方式：
 
@@ -177,17 +177,162 @@ executable('demo', 'main.c', dependencies : gtkdep)
 
 - 不需要引入头文件
 
-## Ninja
+### Ninja
 
 Ninja 设计从高级构建系统接受输入，用于快速构建。Ninja 配置文件难以编写，但却能快速识别增量构建。
 
+### GNU Autotools
 
-## GNU Autotools
+#### Makefile
 
-### 多版本 gcc 管理
+简单语法略过，记录一些细节。
 
-CentOS
-https://blog.csdn.net/JasonZhao7/article/details/128159650
+- [Flavors (GNU make)](https://www.gnu.org/software/make/manual/html_node/Flavors.html)
+
+    - 简单赋值：使用 `:=` 定义，在第一次定义时展开，**以后不会再变**。
+    - 递归赋值：使用 `=` 定义，每次遇到时展开，**可能会变**。
+    - 条件赋值：使用 `?=` 定义，如果没有定义过，则展开。
+
+#### 多版本 gcc 管理
+
+[CentOS](https://blog.csdn.net/JasonZhao7/article/details/128159650)
 
 与之类似地，Debian 中有 update-alternatives
 
+## 包管理器
+
+包管理器又是如何利用、包装上述构建系统的？如何在本地修改软件包源码、修改编译选项并重新构建安装？
+
+### APT/DPKG
+
+!!! quote
+
+    - [Chapter 5. Simple packaging](https://www.debian.org/doc/manuals/debmake-doc/ch05.en.html)
+
+### deb 包格式
+
+
+打包流程：
+
+```shell
+# 进入源码目录
+debmake
+debuild
+```
+
+#### `debian/rules`
+
+`debain/rules` 是一个 Makefile，定义了软件包的构建过程。`debuild` 会执行下面这些操作：
+
+```shell
+fakeroot debian/rules clean
+fakeroot debian/rules build
+fakeroot debian/rules binary
+fakeroot debian/rules clean
+```
+
+`debian/rules` 会默认将所有 target 转交给 `dh`，除非文件中有覆盖定义：
+
+```Makefile
+%:
+	dh $@
+```
+
+#### [dh](https://manpages.debian.org/testing/debhelper/dh.1.en.html)
+
+
+
+!!! todo
+
+    研究 dh 如何使用各个构建系统的。
+
+    研究 rdma-core 是如何被构建的。
+
+重新打包：
+
+```shell
+# 获取源码，安装相关依赖：
+apt-get source <package>
+apt-get build-dep <package>
+cd <package>-*/
+# 修改源码
+# 添加版本后缀
+dch --local foo
+# 构建
+debuild -us -uc
+```
+
+### YUM/DNF/RPM
+
+!!! quote
+
+    - [How to create a Linux RPM package](https://www.redhat.com/en/blog/create-rpm-package)
+    - [Rpmbuild Tutorial](https://rpmbuildtut.wordpress.com/)
+    - [Fedora Packaging Guidelines :: Fedora Docs](https://docs.fedoraproject.org/en-US/packaging-guidelines/)
+
+打包流程：
+
+```text
+# RPM 包命名格式
+<name>-<version>-<release>.<arch>.rpm
+bdsync-0.11.1-1.x86_64.rpm
+bdsync-0.11.1-1.el8.x86_64.rpm
+```
+
+```bash
+$ dnf install -y rpmdevtools rpmlint
+# RPM 包构建要求家目录下指定结构
+$ rpmdev-setuptree
+$ tree rpmbuild
+rpmbuild
+├── BUILD
+├── RPMS
+├── SOURCES # 源码打成 tar 放在这里
+├── SPECS
+└── SRPMS
+# 放置源码
+$ tar czvf rpmbuild/SOURCES/myscript-1.0.tar.gz myscript-1.0/
+# 放置 spec 文件
+$ rpmdev-newspec rpmbuild/SPECS/myscript.spec
+# 构建
+$ rpmbuild -bb rpmbuild/SPECS/myscript.spec
+```
+
+#### rpm 包操作
+
+```bash
+# 解包
+$ rpm2cpio *.rpm | cpio -idm
+```
+
+#### `.spec`
+
+- 宏 `%{_prefix}`，使用 `rpm --eval '%{_prefix}'` 可以查看。有内置、用户定义、spec 文件专有三种。
+
+    spec 文件专有的宏控制整体构建：
+
+    ```text
+    # 构建
+    %build
+    %configure
+
+    # 安装与卸载
+    %pre # before install script run
+    %post # after install
+
+    %files # files to be installed
+
+    %preun # before uninstall 
+    %postun # after uninstall
+    ```
+
+#### rpmbuild
+
+- [传递参数](https://stackoverflow.com/questions/64220041/how-to-use-environment-variables-in-the-header-of-rpm-spec-file-for-version)：
+
+    环境变量无法进入 rpmbuild 的构建过程，应该通过选项传输：
+
+    ```bash
+    rpmbuild -ba --define "version_ ${VERSION}" myspec.spec
+    Version: %{version_}
+    ```

@@ -29,7 +29,7 @@ GCC 定制者（比如发行版）可以通过该文件强制 GCC 使用某些�
 + %{!r:%{!fpie:%{!fPIE:%{!fpic:%{!fPIC:%{!fno-pic:-fPIE}}}}}}
 ```
 
-该 spec 可能在红帽系和
+该 spec 可能在红帽系及其衍生版中存在，会导致内核等不支持 PIC 的代码构建失败，需要注意。
 
 ### PIE/PIC
 
@@ -61,3 +61,7 @@ GCC 定制者（比如发行版）可以通过该文件强制 GCC 使用某些�
 | `-fno-PIE -fno-pic -fno-PIC -fno-PIE` | `-fno-PIC` | `-fno-PIC -fPIE` |
 | `-fno-PIE -fno-pic -fno-PIE` | `-fno-PIE` | `-fno-PIE -fPIE` |
 | `-fno-PIE -fno-pic -fno-pic` | `-fno-pic` | `-fno-pic` |
+
+!!! todo
+
+    阅读 GCC 源码，看看选项是如何处理的。

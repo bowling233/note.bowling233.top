@@ -310,7 +310,7 @@ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
 
 - 汇集 `KBUILD_CPPFLAGS`、`KBUILD_CFLAGS`、`ccflags-y` 和 `CFLAGS_$(target-stem).o`，然后基于 `ccflags-remove-y` 和 `CFLAGS_REMOVE_$(target-stem).o` 进行过滤
 
-    ```makefile
+    ```makefile title="scripts/Makefile.lib"
     _c_flags       = $(filter-out $(CFLAGS_REMOVE_$(target-stem).o), \
                      $(filter-out $(ccflags-remove-y), \
                          $(KBUILD_CPPFLAGS) $(KBUILD_CFLAGS) $(ccflags-y)) \
@@ -327,6 +327,12 @@ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
     KBUILD_RUSTFLAGS += $(KRUSTFLAGS)
     ```
 
+    此外，`ccflags-y` 也可以受用户传入的 `EXTRA_CFLAGS` 控制：
+
+    ```makefile title="scripts/Makefile.lib"
+    ccflags-y  += $(EXTRA_CFLAGS)
+    ```
+
 - 添加 KConfig 控制的选项：
 
     ```makefile
@@ -339,7 +345,7 @@ basename_flags = -DKBUILD_BASENAME=$(call name-fix,$(basetarget))
     endif
     ```
 
-- out-of-tree 添加结尾：
+- out-of-tree 添加 Include 结尾：
 
     ```makefile
     # $(srctree)/$(src) for including checkin headers from generated source files
@@ -391,7 +397,7 @@ modpost: $(if $(single-build),, $(if $(KBUILD_BUILTIN), vmlinux.o)) \
 7. **模块构建的阶段性**：
    - 该文件是模块构建的第二阶段，第一阶段生成 `.o` 文件和 `.mod` 文件，第二阶段通过 `modpost` 处理这些文件。
 
-值得一提的是，该阶段部分文件使用的 FLAGS 又不同了。以 `.mod.o` 为例：
+值得一提的是，该阶段部分文件使用的 FLAGS 有可能与构建阶段不同。以 `.mod.o` 为例：
 
 ```makefile title="scripts/Makefile.modfinal"
 quiet_cmd_cc_o_c = CC [M]  $@
@@ -401,11 +407,36 @@ quiet_cmd_cc_o_c = CC [M]  $@
 	$(call if_changed_dep,cc_o_c)
 ```
 
-不一致的是 modkern_cflags
+不一致的是 `modkern_cflags`：
 
 ```makefile
 modkern_cflags =                                          \
 	$(if $(part-of-module),                           \
 		$(KBUILD_CFLAGS_MODULE) $(CFLAGS_MODULE), \
 		$(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL) $(modfile_flags))
+```
+
+!!! todo
+
+    曾经遇到 `.mod.o` 受 `EXTRA_CFLAGS` 影响而构建阶段不受的情况，待研究。
+
+### `modules.order` 和 `modules_install`
+
+`modules.order` 用于记录模块的构建顺序和依赖关系，它将遍历子目录，如果子目录有 `modules.order` 文件，则将其内容追加到 `modules.order` 文件中，否则附加目标名。
+
+```makefile title="scripts/Makefile.build"
+cmd_modules_order = { $(foreach m, $(real-prereqs), \
+	$(if $(filter %/modules.order, $m), cat $m, echo $m);) :; } \
+	> $@
+
+$(obj)/modules.order: $(obj-m) FORCE
+	$(call if_changed,modules_order)
+```
+
+`modules_install` 目标见 `scripts/Makefile.modinst`，将读取 `modules.order` 文件并将其中的模块逐一安装。
+
+```makefile title="scripts/Makefile.modinst"
+modules := $(call read-file, $(MODORDER))
+modules := $(patsubst $(extmod_prefix)%.o, $(dst)/%.ko$(suffix-y), $(modules))
+install-$(CONFIG_MODULES) += $(modules)
 ```

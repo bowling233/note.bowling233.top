@@ -8,35 +8,42 @@ libfabric 简称 OFI，由不希望网络 API 受 InfiniBand 的抽象限制的�
 
 libfabric 整体分为两层：
 
-- `src` 中是 Core Service 层，负责提供在 Windows、Linux、OSX 上一致的 API 接口，供上层应用使用
+- `src` 中是 Core Service 层，负责提供和操作系统、底层网卡无关的 API 接口，供上层应用使用
 - `prov` 是 Provider 层，实现具体的底层通信
 
 ![arch](https://ofiwg.github.io/libfabric/images/openfabric-interfaces-overview.png)
 
 libfabric 有完善的说明文档，下面总结一些 [fi_arch(7)](https://ofiwg.github.io/libfabric/main/man/fi_arch.7.html) 中的基本知识：
 
-- 通信方式：可以是面向连接的或无连接的，通过概念上类似于套接字的**端点（Endpoints）**进行通信。
-- 数据传输服务：Libfabric 提供了多种数据传输服务，包括消息（messages）、带标签消息（tagged messages）、远程内存访问（RMA）、原子操作（atomics）和集合操作（collectives）。
-- 内存注册（Memory Registration）：这是一个关键概念，它通过锁定虚拟到物理的内存映射，使网络硬件能够直接访问应用程序数据缓冲区，并通过注册密钥提供安全机制。
-- 完成服务（Completion Services）：使用完成队列（completion queues）或计数器（counters）报告异步数据传输操作的结果，旨在实现高性能。
-- 面向对象设计：该架构遵循面向对象的设计，包含以下关键对象：
-    - Fabric (fi_fabric)：表示一个或多个网络接口的集合。
-    - Domain (fi_domain)：表示一个特定于 Provider 的网络接口（或一组接口）的功能。
-    - Passive Endpoint (fi_pep)：用于监听传入连接请求。
-    - Active Endpoint (fi_endpoint)：用于实际的数据传输。
-    - Event Queues (fi_eq)：用于接收异步事件，如连接请求、错误等。
-    - Completion Queue (fi_cq)：用于报告异步操作的完成状态。
-    - Memory Region (fi_mr)：表示已注册的内存区域。
-    - Address Vectors (fi_av)：用于存储远程端点的地址信息。
-- **通信模式（Communication Model）：
+- **通信方式**：进程间通过的**端点（Endpoints）**进行通信，概念上类似于套接字
+- **数据传输服务**：提供五类通信 API，下面列出部分供读者熟悉 API 命名
 
-    | Endpoint 类型 | 对应 |
+    ```text
+    fi_msg: fi_recv, fi_recvv, fi_recvmsg, fi_inject
+    fi_rma: fi_read, fi_readv, fi_readmsg, fi_inject_write
+    fi_atomic: fi_atomic, fi_atomicv, fi_atomicmsg, fi_fetch_atomic, fi_compare_atomic
+    fi_tagged: fi_trecv, fi_trecvv, fi_trecvmsg, fi_tinject
+    fi_collective: fi_join_collective, fi_barrier, fi_broadcast, fi_alltoall
+    ```
+
+- **面向对象设计**：用户需要操作这些关键对象
+    - Fabric (`fi_fabric`)：表示一个或多个网络接口的集合。
+    - Domain (`fi_domain`)：表示一个特定于 Provider 的网络接口（或一组接口）的功能。
+    - Passive Endpoint (`fi_pep`)：用于监听传入连接请求。
+    - Active Endpoint (`fi_endpoint`)：用于实际的数据传输。
+    - Event Queues (`fi_eq`)：用于接收异步事件，如连接请求、错误等。
+    - Completion Queue (`fi_cq`)：用于报告异步操作的完成状态。
+    - Memory Region (`fi_mr`)：表示已注册的内存区域。
+    - Address Vectors (`fi_av`)：用于存储远程端点的地址信息。
+- **通信模式（Communication Model）**：可类比 RDMA 服务类型
+
+    | Endpoint 类型 | 类比 |
     | - | - |
     | `FI_EP_MSG` Reliable-connected | RDMA RC |
     | `FI_EP_DGRAM` Unreliable datagram | RDMA UD |
     | `FI_EP_RDM` Reliable-unconnected | RDMA RD |
 
-以 Verbs Provider 为例，我们应用一下上面的基本概念，官方文档见 [fi_verbs(7)](https://ofiwg.github.io/libfabric/v1.2.0/man/fi_verbs.7.html)。：
+以 Verbs Provider 为例，我们应用一下上面的基本概念，官方文档见 [fi_verbs(7)](https://ofiwg.github.io/libfabric/v1.2.0/man/fi_verbs.7.html)：
 
 - 支持情况：
 
@@ -124,7 +131,7 @@ export FI_PROVIDER=verbs
 
 ## 源码阅读
 
-libfabric 版本数宏定义写在 `include/rdma/fabric.h` 中。
+libfabric 版本编号的宏定义写在 `include/rdma/fabric.h` 中。
 
 ### 类型系统
 
@@ -132,26 +139,84 @@ libfabric 版本数宏定义写在 `include/rdma/fabric.h` 中。
 
 `fid` 作为所有类的基类。
 
-### Provider
+### 设备信息获取
 
-本节以 Verbs Provider 为例，通过几个问题引导，探究 Provider 是如何向上层提供通信能力的。
-
-#### Provider、Fabric 和 Domain
-
-所有 Provider 定义为 `struct fi_provider` 的实例，通过函数指针调用具体操作：
-
-```c title="prov/verbs/src/verbs_init.c"
-struct fi_provider vrb_prov = {
-    .name = VERBS_PROV_NAME,
-    .version = OFI_VERSION_DEF_PROV,
-    .fi_version = OFI_VERSION_LATEST,
-    .getinfo = vrb_getinfo,
-    .fabric = vrb_fabric,
-    .cleanup = vrb_fini
-};
+```c
+fi_getinfo(FI_VERSION(FI_MAJOR_VERSION, FI_MINOR_VERSION), NULL, NULL, flags, hints, info)
+    for (prov = prov_head; prov; prov = prov->next)
+        prov->provider->getinfo(version, node, service, flags, hints, &cur);
 ```
 
-Fabric 创建时，`fi_fabric()` 通过 `ofi_getprov()` 字符串匹配获得对应的 `fi_provider` 实例。剩余的任务转交给该 Provider 的 `.fabric` 成员：
+以 Verbs Provider 为例：
+
+```c
+vrb_getinfo()
+    vrb_init_info(&vrb_devs, &vrb_util_prov.info)
+        vrb_getifaddrs(verbs_devs)
+            ofi_getifaddrs(&ifaddr)
+                getifaddrs(ifaddr)
+            for (ifa = ifaddr; ifa; ifa = ifa->ifa_next)
+                vrb_ifa_rdma_info(ifa, &dev_name, &rai)
+                    rdma_create_id(NULL, &id, NULL, RDMA_PS_TCP)
+                    rdma_getaddrinfo((char *) name, NULL, &rai_hints, &rai_)
+                    rdma_bind_addr(id, rai_->ai_src_addr)
+                    // 在该 ifaddrs 上测试 rdma verbs
+                verbs_devs_add(verbs_devs, dev_name, rai)
+                // 插入 vrb_devs
+        ctx_list = rdma_get_devices(&num_devices)
+            for (i = 0; i < num_devices; i++)
+                vrb_alloc_info(ctx_list[i], &fi, ep_type[j])
+                // 插入 vrb_util_prov.info
+                    vrb_get_device_attrs(ctx, fi, ep_dom->protocol);
+                        ret = ibv_query_device(ctx, &device_attr);
+                        ret = vrb_get_qp_cap(ctx, info, protocol);
+                        ret = ibv_query_port(ctx, port_num, &port_attr);
+    vrb_get_match_infos(&vrb_devs, version, node, service,
+                     flags, hints, vrb_util_prov.info, info);
+        // 先尝试 vrb_util_prov.info
+        vrb_get_matching_info(version, hints, info, raw_info,
+                     ofi_is_wildcard_listen_addr(node, service, flags, hints));
+            struct fi_info *check_info = verbs_info
+            for (i = 1; check_info; check_info = check_info->next, i++)
+                vrb_check_hints(version, hints, check_info)
+                // 如果符合 hints，则加入返回的链表中
+        // 再尝试 vrb_devs
+        vrb_handle_sock_addr(verbs_devs, node, service, flags, hints, info)
+        vrb_handle_ib_ud_addr(node, service, flags, info)
+```
+
+总结一下：
+
+- 两个全局链表：分别通过 `getifaddrs()`（来自 libc）和 `rdma_get_devices()`（来自 librdmacm）获取
+
+    ```c title="prov/verbs/src/verbs_init.c"
+    DEFINE_LIST(vrb_devs);
+    struct util_prov vrb_util_prov = {
+        .prov = &vrb_prov,
+        .info = NULL, // struct fi_info *
+        .info_lock = &vrb_info_mutex,
+        .flags = 0,
+    };
+    ```
+
+    这里的 `DEFINE_LIST` 和内核的双向链表定义和用法相同。
+
+- `vrb_get_device_attrs()` 中通过 IB Verbs API 获取设备信息，并保存到 `info->domain_attr`、`info->tx_attr` 等处。
+- `vrb_get_match_infos()` 将先尝试 `rdma_get_devices()` 的列表，失败再尝试 `getifaddrs()` 的列表
+    - 根据接口类型，调用 `vrb_get_passive_info()` 或 `vrb_set_default_info()`
+
+
+```text
+vrb_read_params(): FI_VERBS_TX_SIZE -> vrb_gl_data.def_tx_size
+vrb_set_default_info(): MIN(vrb_gl_data.def_tx_size, info->tx_attr->size) -> info->tx_attr->size
+
+INFO 传递到 vrb_open_ep()，调用 vrb_ep_save_info_attr()
+
+vrb_ep_save_info_attr(): info.tx_attr.size -> ep->info_attr.tx_size
+vrb_msg_ep_get_qp_attr(): ep->info_attr.tx_size -> attr->cap.max_send_wr
+```
+
+### Fabric 创建与 Provider 初始化
 
 ```c title="src/fabric.c"
 struct ofi_prov {
@@ -172,6 +237,53 @@ int DEFAULT_SYMVER_PRE(fi_fabric)(struct fi_fabric_attr *attr,
 }
 ```
 
+- `fi_ini()` 负责加载各 Provider，调用链如下：
+
+    ```c
+    ofi_ordered_provs_init()
+        for (i = 0; i < num_provs; i++) // 遍历预定义的 ordered_prov_names 字符串列表
+            prov = ofi_alloc_prov(ordered_prov_names[i]);
+            ofi_insert_prov(prov);
+            // 插入预定义的 struct ofi_prov *prov_head 链表
+    ofi_load_dl_prov()
+        ofi_find_prov_libs()
+            for (prov = prov_head; prov; prov = prov->next) // 遍历上面填充的列表
+                ofi_reg_dl_prov(lib, false)
+                    dlopen(lib, RTLD_NOW)
+                    inif = dlsym(dlhandle, "fi_prov_ini")
+                    ofi_register_provider((inif)(), dlhandle)
+    ofi_register_provider(PSM3_INIT, NULL)
+    //...
+    ```
+
+    其中，`fi_prov_ini()` 是 External Provider 的入口函数（见 [fi_provider(3)](https://ofiwg.github.io/libfabric/v1.14.0/man/fi_provider.3.html)），在预定义的 Provider 中是找不到该符号定义的。
+
+    预定义的 Provider 的入口函数由宏定义为 `<provider>_INIT`，独立调用。
+
+    ```c title="include/ofi_prov.h"
+    #define INI_SIG(name) struct fi_provider* name(void)
+    #define VERBS_INIT fi_verbs_ini()
+    ```
+
+    ```c title="prov/verbs/src/verbs_init.c"
+    #define VERBS_INI INI_SIG(fi_verbs_ini)
+    VERBS_INI
+    {
+        return &vrb_prov;
+    }
+    struct fi_provider vrb_prov = {
+        .name = VERBS_PROV_NAME,
+        .version = OFI_VERSION_DEF_PROV,
+        .fi_version = OFI_VERSION_LATEST,
+        .getinfo = vrb_getinfo,
+        .fabric = vrb_fabric,
+        .cleanup = vrb_fini
+    };
+    ```
+
+- `ofi_getprov()` 字符串匹配获得对应的 `fi_provider` 实例
+- 剩余的任务转交给该 Provider 的 `.fabric` 成员
+
 以 Verbs Provider 为例，`vrb_fabric()` 首先调用 `ofi_fabric_init()` 进行通用初始化，然后做一些 Verbs 特有的设置，其中最重要的是设置 fabric 的函数表：
 
 ```c title="prov/verbs/src/verbs_domain.c"
@@ -189,6 +301,8 @@ static struct fi_ops_fabric vrb_ops_fabric = {
     .trywait = vrb_trywait
 };
 ```
+
+### Domain
 
 `fi_domain()` 直接将操作转交给 `fabric->ops->domain()`，在上面我们看到这就是 `vrb_domain()`。它调用 `ofi_domain_init()` 进行通用初始化，然后做一些 Vrb 特有的设置。对于不同的传输类型，这里有重要的区分：
 
@@ -233,40 +347,7 @@ static struct fi_ops_domain vrb_msg_domain_ops = {
 };
 ```
 
-#### Getinfo
 
-众所周知，Verbs 是一套通用的 API，而底层设备能支持的功能可能是受限的。
-
-调用链：`fi_getinfo` -> `prov->provider->getinfo` -> `vrb_getinfo()` -> `vrb_get_match_infos(raw_info: vrb_util_prov.info)` -> `vrb_get_matching_info(verbs_info: raw_info)` -> `check_info: verbs:info`。
-
-其中，设备列表的传递：
-
-- `verbs_init.c` 中定义两个全局链表
-
-    ```c
-    struct util_prov vrb_util_prov = {
-        .prov = &vrb_prov,
-        .info = NULL, // struct fi_info *
-        .info_lock = &vrb_info_mutex,
-        .flags = 0,
-    };
-    DEFINE_LIST(vrb_devs);
-    ```
-
-- `vrb_get_info()`
-    - `vrb_init_info()` 调用 `rdma_get_devices()` 获取设备列表，初始化上面两个链表
-    - 两个链表传入 `vrb_get_match_infos()`
-
-关于 Verbs，主要通过下面三个函数查询支持的功能：
-
-```c title="prov/verbs/src/verbs_info.c"
-static int vrb_get_device_attrs(struct ibv_context *ctx,
-                   struct fi_info *info, uint32_t protocol) {
-    ret = ibv_query_device(ctx, &device_attr);
-    ret = vrb_get_qp_cap(ctx, info, protocol);
-    ret = ibv_query_port(ctx, port_num, &port_attr);
-}
-```
 
 #### Endpoint 的创建和启用（建链）
 
@@ -491,13 +572,167 @@ static int vrb_ep_bind(struct fid *fid, struct fid *bfid, uint64_t flags) {
 
 在源码中，暂时没有看见自动创建 Shareable Receive Context 的地方，推测这里包装为 `fi_srx_context()` 接口应该是把选择权留给用户了，默认并不启用 SRQ（XRC 除外，未仔细查看是否会自动分配）。
 
+#### CQ 的创建
+
+CQ 在 `vrb_msg_ep_get_qp_attr()` 中设置：
+
+```c
+    if (ep->util_ep.tx_cq) {
+        struct vrb_cq *cq = container_of(ep->util_ep.tx_cq,
+                            struct vrb_cq, util_cq);
+
+        attr->cap.max_send_wr = ep->info_attr.tx_size;
+        attr->cap.max_send_sge = ep->info_attr.tx_iov_limit;
+        attr->send_cq = cq->cq;
+    } else {
+        struct vrb_cq *cq =
+            container_of(ep->util_ep.rx_cq, struct vrb_cq, util_cq);
+
+        attr->send_cq = cq->cq;
+    }
+
+    if (ep->util_ep.rx_cq) {
+        struct vrb_cq *cq =
+            container_of(ep->util_ep.rx_cq, struct vrb_cq, util_cq);
+
+        attr->cap.max_recv_wr = ep->info_attr.rx_size;
+        attr->cap.max_recv_sge = ep->info_attr.rx_iov_limit;
+        attr->recv_cq = cq->cq;
+    } else {
+        struct vrb_cq *cq =
+            container_of(ep->util_ep.tx_cq, struct vrb_cq, util_cq);
+
+        attr->recv_cq = cq->cq;
+    }
+```
+
+优先每个方向使用自己的 CQ，如果不存在则使用对方的 CQ。
+
+层级结构：
+
+```c
+struct util_cq {
+    struct fid_cq        cq_fid;
+    struct util_domain    *domain;
+}
+struct vrb_cq {
+    struct util_cq        util_cq;
+    struct ibv_comp_channel    *channel;
+    struct ibv_cq        *cq;
+}
+```
+
+CQ 需由用户创建。以 pingpong 为例：
+
+```c
+ct->cq_attr.size = fi->tx_attr->size;
+ret = fi_cq_open(ct->domain, &(ct->cq_attr), &(ct->txcq), &(ct->txcq));
+if (ret) {
+    PP_PRINTERR("fi_cq_open", ret);
+    return ret;
+}
+
+ct->cq_attr.size = fi->rx_attr->size;
+ret = fi_cq_open(ct->domain, &(ct->cq_attr), &(ct->rxcq), &(ct->rxcq));
+if (ret) {
+    PP_PRINTERR("fi_cq_open", ret);
+    return ret;
+}
+```
+
+CQ 创建过程：
+
+```c
+fi_cq_open
+
+
+    vrb_cq_open()
+        ofi_cq_init(&vrb_prov, domain_fid, &tmp_attr, &cq->util_cq, vrb_cq_progress, context) 注意 vrb_cq_progress
+```
+
+#### 如何使用 event channel
+
+从 IB Verbs 逆向找调用：
+
+```c
+ibv_req_notify_cq()
+    vrb_cq_trywait()
+        vrb_cq_sread()
+        vrb_trywait()
+```
+
+```c
+ibv_poll_cq()
+    vrb_poll_cq()
+        vrb_flush_cq()
+            vrb_cq_trywait()：位于 ibv_req_notify_cq 之后
+            vrb_cq_progress()：
+            vrb_post_send()：
+```
+
+以 `pingpong.c` 中 `pp_get_cq_comp()` 调用 `fi_cq_read()` 为例：
+
+```c
+fi_cq_read() = struct fi_ops_cq.read
+    = vrb_cq_ops.read = ofi_cq_read()
+    fi_cq_readfrom() = struct fi_ops_cq.readfrom
+    = vrb_cq_ops.readfrom = vrb_cq_readfrom()
+        ofi_cq_readfrom()
+            cq->progress(cq) = vrb_cq_progress()    
+                vrb_flush_cq()
+                    vrb_poll_cq()
+                        ibv_poll_cq()
+```
+
+而如果是 Event Channel，则应该调用 `fi_cq_sread()`：
+
+```c
+fi_cq_sread() = struct fi_ops_cq.sread = vrb_cq_ops.sread = vrb_cq_sread()
+    vrb_cq_trywait()
+        ibv_get_cq_event()
+        ibv_req_notify_cq()
+        vrb_flush_cq()
+            vrb_poll_cq()
+                ibv_poll_cq()
+    vrb_poll_events()
+        poll(_cq->channel->fd)
+        ibv_get_cq_event()
+```
+
+#### 发送和接收
+
+小消息使用 SEND_INLINE：
+
+```c
+pp_inject(ct, ct->ep, ct->opts.transfer_size);
+    pp_post_inject(ct, ep, size + ct->tx_prefix_size)
+fi_inject(ep, ct->tx_buf, size, ct->remote_fi_addr)
+    = struct fi_ops_msg.inject = vrb_msg_ep_msg_ops.inject
+    = vrb_msg_ep_inject()
+    vrb_send_buf(ep, &wr, buf, len, NULL)
+        vrb_post_send(ep, wr, 0)
+            vrb_flush_cq(cq) //当 ep->sq_credits 为 0 时
+            ibv_post_send(ep->ibv_qp, wr, &bad_wr)
+fi_tinject(ep, ct->tx_buf, size, ct->remote_fi_addr, TAG) 
+    = struct fi_ops_tagged.inject // Verbs 不提供
+```
+
+```c
+pp_tx(ct, ct->ep, ct->opts.transfer_size)
+    pp_post_tx(ct, ep, size + ct->tx_prefix_size, ct->tx_ctx_ptr)
+fi_send(ep, ct->tx_buf, size, fi_mr_desc(ct->mr), ct->remote_fi_addr, ctx);
+    = struct fi_ops_msg.send = vrb_msg_ep_send()
+    vrb_send_buf(ep, &wr, buf, len, desc)
+        //...
+fi_tsend(ep, ct->tx_buf, size, fi_mr_desc(ct->mr), ct->remote_fi_addr, TAG, ctx)  
+    = struct fi_ops_tagged.tsend // Verbs 不提供
+```
+
 ### Verbs Provider
 
 #### IFACE 与 DEVICE
 
 Verbs 使用 RDMACM 建链，需要使用 `rdma_bind_addr()` 绑定到相关的网络接口。因此有 `vrb_getifaddrs()` 来查询接口信息。
-
-现在我们来排查一下该函数找不到 IB 设备的网络接口的问题。已知传递给该函数的 IB 设备列表中有 `mlx5_bond_0`，使用 `show_gids` 可以看到对应网络接口为 `bond0`，但该函数没有找到该接口。
 
 ```text
 vrb_getifaddrs()
@@ -505,8 +740,90 @@ ofi_getifaddrs() src/common.c
 getifaddrs() /usr/include/ifaddrs.h
 ```
 
-使用 `getifaddrs(3)` 帮助页的示例代码，确实有返回 `bond0` 接口。接下来看该函数如何处理这些接口。
+使用 `getifaddrs(3)` 帮助页的示例代码，容易得知返回的内容。
+
+!!! todo
+
+    接下来看该函数如何处理这些接口。
+
+#### 参数配置
+
+`vrb_msg_ep_get_qp_attr()` 从 `ep->info_attr` 获取了 EP 的 QP 参数，后者由 `vrb_ep_save_info_attr()` 在 `vrb_open_ep()` 中将先前 `fi_getinfo()`（即 `vrb_get_device_attrs()`）拿到的 `info` 结构体信息存入。
+
+```mermaid
+flowchart
+    n1["vrb_msg_ep_get_qp_attr()"]
+    n2@{ shape: "hex", label: "ep->info_attr" }
+    n3@{ shape: "hex", label: "ibv_qp_attr" }
+    n1 --- n3
+    n2 --- n1
+    n4["fi_getinfo()"]
+    n5["vrb_get_device_attrs()"]
+    n4 --- n5
+    n6@{ shape: "hex", label: "info" }
+    n4 --- n6
+    n7["vrb_ep_save_info_attr()"]
+    n6 --- n7
+    n7 --- n2
+```
+
+`vrb_get_device_attrs()`：
+
+- `ibv_query_device()` 存入 `info`
+- `vrb_get_qp_cap()` 比较 `info` 和全局默认值。后者来自 `vrb_read_params()`。该函数从环境变量中获取参数的具体值，然后覆盖全局变量 `struct vrb_gl_data vrb_gl_data` 中的默认值：
+
+```c title="prov/verbs/src/verbs_init.c"
+static int vrb_read_params(void) {
+    /* Common parameters */
+    if (vrb_get_param_int("tx_size", "Default maximum tx context size",
+                  &vrb_gl_data.def_tx_size) ||
+        (vrb_gl_data.def_tx_size < 0)) {
+        VRB_WARN(FI_LOG_CORE, "Invalid value of tx_size\n");
+        return -FI_EINVAL;
+    }
+    //...
+}
+```
+
+`fi_param_*` API 支持 Provider 定义、获取参数。Provider 一般会对它包装，例如：
+
+```text
+vrb_param_define -> fi_param_define
+vrb_get_param_int -> fi_param_get_int
+```
+
+参数格式为 `FI_<provider_name>_<param_name>`。以 Verbs Provider 为例，支持下列参数：
+
+```text
+FI_VERBS_TX_SIZE
+FI_VERBS_RX_SIZE
+FI_VERBS_TX_IOV_LIMIT
+FI_VERBS_RX_IOV_LIMIT
+FI_VERBS_INLINE_SIZE
+FI_VERBS_MIN_RNR_TIMER
+FI_VERBS_USE_ODP
+FI_VERBS_PREFER_XRC
+FI_VERBS_XRCD_FILENAME
+FI_VERBS_CQREAD_BUNCH_SIZE
+FI_VERBS_GID_IDX
+FI_VERBS_DEVICE_NAME
+FI_VERBS_IFACE
+FI_VERBS_DGRAM_USE_NAME_SERVER
+FI_VERBS_DGRAM_NAME_SERVER_PORT
+vrb_read_params():742<info> dmabuf support is disabled
+```
+
+以 `FI_VERBS_TX_SIZE` 的流向为例：
 
 
 
+### API 层
 
+libfabric 自身的代码位于 `src` 下。这部分 API 采用宏导出符号，因此 IDE 可能难以解析到函数定义的位置：
+
+```c title="src/var.c"
+__attribute__((visibility ("default"),EXTERNALLY_VISIBLE))
+int DEFAULT_SYMVER_PRE(fi_param_get)(struct fi_provider *provider,
+        const char *param_name, void *value)
+{ /* ... */ }
+```

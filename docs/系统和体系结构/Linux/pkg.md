@@ -52,3 +52,43 @@
 ### OpenAnolis
 
 阿里基于 CentOS 开发
+
+## 完整性校验
+
+包管理器肩负一个重要的职责，就是系统软件包的完整性校验。
+
+输出格式为 9 个字符的字符串，可能包含属性标记符：
+
+- `c` %config 配置文件
+- `d` %doc 文档文件
+- `g` %ghost 文件（即文件内容不包含在软件包载荷中）
+- `l` %license 许可证文件
+- `r` %readme 说明文件
+
+后面跟随文件名。9 个字符中的每一个都表示文件属性与数据库中记录值的比较结果。单个 "."（句点）表示测试通过，单个 "?"（问号）表示无法执行测试（例如文件权限阻止读取）。其他字符表示相应 --verify 测试失败：
+
+| 字符 | 含义 |
+|------|------|
+| `S` | 文件大小不同 |
+| `M` | 模式不同（包括权限和文件类型） |
+| `5` | 摘要（原 MD5 校验和）不同 |
+| `D` | 设备主/次设备号不匹配 |
+| `L` | readLink(2) 路径不匹配 |
+| `U` | 用户所有权不同 |
+| `G` | 组所有权不同 |
+| `T` | 修改时间不同 |
+| `P` | 能力（capabilities）不同 |
+
+```bash
+$ for p in $(rpm -q -a); do ret=$(sudo rpm -V $p); if [[ $ret != "" ]]; then printf "$p\n$ret\n"; fi; done
+kernel-tlinux4-core-5.4.241-1.0017.4.tl3.x86_64
+....L....    /boot/symvers-5.4.241-1-tlinux4-0017.4.gz # 文件链接改动
+.M.......  g /lib/modules/5.4.241-1-tlinux4-0017.4/modules.alias # 文件权限改动
+S.5....T.  c /etc/security/limits.conf # 文件内容改动
+........P    /usr/sbin/mtr-packetkernel-tlinux4-5.4.119-1.0006.tl2.x86_64 # 文件 cap 改动
+.......T.    /lib/modules/5.4.119-1-tlinux4-0006/modules.alias # 文件时间改动
+$ for p in $(dpkg -l | grep ^ii | awk '{print $2}'); do ret=$(sudo dpkg -V $p); if [[ $ret != "" ]]; then printf "$p\n$ret\n"; fi; done
+????????? c /etc/sudoers
+????????? c /etc/sudoers.d/README
+missing     /var/lib/polkit-1/localauthority (Permission denied)
+```

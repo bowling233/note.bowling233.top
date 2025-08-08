@@ -441,8 +441,6 @@ bpftrace stdlib 通过下面的方式进入 Clang 头文件：
 | `stdint.h` | Y | Y |
 | `__stddef_max_align_t.h` | N | Y |
 
-如果我们必须提供自己的 C 标准库头文件实现，也许我们需要将保护符修改为 `__BPFTRACE` 前缀。我在这方面经验不多，希望能得到大家的意见。
-
 ### `c_macro_expansion.cpp` 错误分析
 
 在移除 `stdint.h` 和 `limits.h` 后，其中的宏仍然不能正常展开，涉及到了宏展开的 Pass，报错如下：
@@ -497,3 +495,6 @@ void Driver::parse(Parser::symbol_type first_token)
 }
 ```
 
+!!! todo
+
+    待分析调用链。

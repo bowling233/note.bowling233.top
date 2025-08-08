@@ -209,8 +209,7 @@ Ninja 设计从高级构建系统接受输入，用于快速构建。Ninja 配�
 
     - [Chapter 5. Simple packaging](https://www.debian.org/doc/manuals/debmake-doc/ch05.en.html)
 
-### deb 包格式
-
+#### deb 包格式
 
 打包流程：
 
@@ -231,7 +230,7 @@ fakeroot debian/rules binary
 fakeroot debian/rules clean
 ```
 
-`debian/rules` 会默认将所有 target 转交给 `dh`，除非文件中有覆盖定义：
+`debian/rules` 默认将所有 target 转交给 `dh`，也可以自行覆盖 target 做自定义操作：
 
 ```Makefile
 %:
@@ -239,8 +238,6 @@ fakeroot debian/rules clean
 ```
 
 #### [dh](https://manpages.debian.org/testing/debhelper/dh.1.en.html)
-
-
 
 !!! todo
 
@@ -335,4 +332,13 @@ $ rpm2cpio *.rpm | cpio -idm
     ```bash
     rpmbuild -ba --define "version_ ${VERSION}" myspec.spec
     Version: %{version_}
+    ```
+
+- 构建系统：支持 [CMake](https://docs.fedoraproject.org/en-US/packaging-guidelines/CMake/) 和 [Meson](https://docs.fedoraproject.org/en-US/packaging-guidelines/Meson/)，可以在 spec 文件中使用预制的宏，会自动设置好各类选项：
+
+    ```text
+    %__cmake
+    %cmake
+    %cmake_build
+    %cmake_install
     ```

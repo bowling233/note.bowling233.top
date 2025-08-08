@@ -4,6 +4,10 @@
 
 ## GCC
 
+!!! quote
+
+    - [GCC for New Contributors — GCC Contributors Guide 0.1 documentation](https://gcc-newbies-guide.readthedocs.io/en/latest/)
+
 - [Invoking GCC (Using the GNU Compiler Collection (GCC))](https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html)
 
     - 具有开启/关闭的选项：`-f` 或 `-W` 开头，格式 `-foo`/`-fno-foo`。

@@ -45,3 +45,34 @@ MPI 实现一般都会为集合通信提供不同的算法，以适应不同的�
     ```
 
 === "Intel MPI"
+
+## 理论知识
+
+!!! quote
+
+    - [scc.ustc.edu.cn/zlsc/cxyy/200910/MPICH/](https://scc.ustc.edu.cn/zlsc/cxyy/200910/MPICH/)
+
+- 熟悉下列通信原语的语义：
+
+    - Broadcast
+    - Scatter
+    - Gather
+    - AllGather
+    - Reduce
+    - ReduceScatter
+    - AllReduce
+    - AllToAll
+
+具备以上基础知识后，我们在 [Demystifying NCCL: An In-depth Analysis of GPU Communication Protocols and Algorithms](https://arxiv.org/html/2507.04786v2) 的带领下，以 NCCL 为例，系统地学习通信算法的各个方面。
+
+
+
+### 通信算法
+
+
+### 流水线
+
+### 缓冲区
+
+
+

@@ -125,3 +125,72 @@ docker image load < image.tar
 ## 工具
 
 - [Dive](https://github.com/wagoodman/dive)
+
+## snippet
+
+一些常用的内容存放在这里：
+
+### 镜像构建
+
+!!! quote
+
+    - [docker buildx build | Docker Docs](https://docs.docker.com/reference/cli/docker/buildx/build/)
+    - [Dockerfile reference | Docker Docs](https://docs.docker.com/reference/dockerfile/)
+
+```bash
+docker build --add-host=<host>:<ip> --progress=plain \
+    --tag <name>:<tag> .
+```
+
+- SSH 配置：
+
+    ```dockerfile
+    # host key
+    RUN ssh-keygen -A
+    # ssh key
+    RUN mkdir -p /root/.ssh \
+        && chmod 700 /root/.ssh \
+        && ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa \
+        && cat /root/.ssh/id_rsa.pub >>/root/.ssh/authorized_keys \
+        && chmod 600 /root/.ssh/authorized_keys
+    # 免校验
+    RUN echo "Host *" >>/root/.ssh/config \
+        && echo "    StrictHostKeyChecking no" >>/root/.ssh/config \
+        && echo "    UserKnownHostsFile=/dev/null" >>/root/.ssh/config
+    RUN sed -i 's/^#*Port .*/Port 3333/' /etc/ssh/sshd_config \
+        && sed -i 's/^#*PermitRootLogin .*/PermitRootLogin yes/' /etc/ssh/sshd_config \
+        && sed -i 's/^#*PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config \
+        && sed -i 's/^#*PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+    ```
+
+### Compose
+
+!!! quote
+
+    - [Compose file reference | Docker Docs](https://docs.docker.com/reference/compose-file/)
+    - [docker compose | Docker Docs](https://docs.docker.com/reference/cli/docker/compose/)
+
+```bash
+docker compose down --remove-orphans --volumes
+```
+
+- 特权：
+
+    ```yaml
+    services:
+      test:
+        privileged: true
+        cap_add:
+          - ALL
+    ```
+
+### Daemon 配置
+
+```json
+{
+    "registry-mirrors": [
+    ],
+    "insecure-registries": [ 
+    ],
+    "data-root": "",
+}

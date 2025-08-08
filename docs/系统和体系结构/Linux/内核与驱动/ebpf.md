@@ -118,5 +118,9 @@ BCC 能够在函数的任意偏移处插桩，而 bpftrace 只能在入口或出
 
 ### rdma-core
 
+## 在 Docker 内使用 eBPF
 
+!!! quote
+
+    - [Run eBPF Programs in Docker using docker-bpf | Hemslo Wang’s Blog](https://hemslo.io/run-ebpf-programs-in-docker-using-docker-bpf/)
 

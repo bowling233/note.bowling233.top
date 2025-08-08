@@ -8,6 +8,13 @@
     - 学习使用 GitHub：[GitHub Quickstart](https://docs.github.com/en/get-started/quickstart/hello-world) | [中文版：GitHub 快速入门](https://docs.github.com/zh/get-started/quickstart/hello-world)
     - 深入理解 Git：[Pro Git](https://git-scm.com/book/en/v2) | [中文版](https://www.progit.cn/)
 
+### rebase
+
+```bash
+git rebase <target-branch>
+git rebase --continue
+```
+
 ### bisect
 
 !!! quote
@@ -41,7 +48,7 @@
 *.jpg binary
 ```
 
-### 更换 Git 端口
+### 更换端口
 
 !!! quote
 
@@ -53,7 +60,9 @@
 git remote set-url origin ssh://git@ssh.github.com:443/yourname/reponame.git
 ```
 
-### 常用 commit 类型
+### commit
+
+常见类型：
 
 | 类型 | 描述 |
 | --- | --- |
@@ -68,3 +77,13 @@ git remote set-url origin ssh://git@ssh.github.com:443/yourname/reponame.git
 | **ci 持续集成** | 持续集成相关 |
 | **build 生成** | 影响构建系统或外部依赖项的更改 |
 | **revert 恢复** | 恢复以前的提交 |
+
+[Magic Keywords](https://stackoverflow.com/questions/58525836/git-magic-keywords-in-commit-messages-signed-off-by-co-authored-by-fixes):
+
+| 关键词 | 说明 |
+| --- | --- |
+| `Signed-off-by` | `git commit -s` 用于签署提交，以表明作者同意发布该提交 |
+| `Co-authored-by` | 用于添加其他作者 |
+| `Reviewed-by` | 用于添加审查者 |
+| `Reported-by` | 用于添加报告者 |
+| `Helped-by` | 用于添加帮助者 |

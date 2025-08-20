@@ -183,7 +183,7 @@ Ninja 设计从高级构建系统接受输入，用于快速构建。Ninja 配�
 
 ### GNU Autotools
 
-#### Makefile
+#### GNU Make
 
 简单语法略过，记录一些细节。
 
@@ -192,6 +192,16 @@ Ninja 设计从高级构建系统接受输入，用于快速构建。Ninja 配�
     - 简单赋值：使用 `:=` 定义，在第一次定义时展开，**以后不会再变**。
     - 递归赋值：使用 `=` 定义，每次遇到时展开，**可能会变**。
     - 条件赋值：使用 `?=` 定义，如果没有定义过，则展开。
+
+#### GNU Automake
+
+!!! quote
+
+    - [](https://www.gnu.org/software/automake/manual/html_node/index.html)
+
+> Note that most GNU Make extensions are not recognized by Automake. Using such extensions in a Makefile.am will lead to errors or confusing behavior.
+
+例如 `filter-out` 这样的 GNU Make 扩展在 Automake 中无效。
 
 #### 多版本 gcc 管理
 
@@ -342,3 +352,18 @@ $ rpm2cpio *.rpm | cpio -idm
     %cmake_build
     %cmake_install
     ```
+
+### Nix
+
+!!! quote
+
+    - [Welcome to nix.dev — nix.dev documentation](https://nix.dev/)
+    - [NixOS Search - Packages](https://search.nixos.org/packages)
+
+```bash
+#!/usr/bin/env nix-shell
+#! nix-shell -i <interpreter shell> --pure
+#! nix-shell -p <package>
+#! nix-shell -I nixpkgs=<package archive>
+
+```

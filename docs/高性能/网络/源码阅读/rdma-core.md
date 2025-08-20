@@ -222,10 +222,21 @@ flowchart
     try_all_drivers(&sysfs_list, device_list, &num_devices);
         struct verbs_device * vdev = try_drivers(sysfs_dev); 
             struct verbs_device *dev = try_driver(driver->ops, sysfs_dev);
+                match_device(ops, sysfs_dev)
+                vdev = ops->alloc_device(sysfs_dev)
         list_add(device_list, &vdev->entry);
     ```
 
-    在 `try_driver()` 中由驱动完成 `verbs_device` 和 `ibv_device` 的初始化：
+    `match_device()` 成功需要满足以下条件：
+
+    1. **匹配表或自定义匹配函数的验证**：
+        - 如果提供了匹配表 (`ops->match_table`)，设备需要通过 `match_driver_id`、`match_name` 或 `match_modalias_device` 中的至少一种方式匹配成功。
+        - 如果提供了自定义匹配函数 (`ops->match_device`)，该函数必须返回 `true`。
+
+    2. **ABI 版本范围检查**：
+        - 设备的 ABI 版本 (`sysfs_dev->abi_ver`) 必须在驱动程序支持的最小 (`ops->match_min_abi_version`) 和最大 (`ops->match_max_abi_version`) 版本之间。
+
+    匹配成功后由驱动完成 `verbs_device` 和 `ibv_device` 的初始化：
 
     ```c title="libibverbs/init.c"
     vdev = ops->alloc_device(sysfs_dev);
@@ -358,6 +369,29 @@ Management Datagram 基于 UD 服务类型实现，向上提供 General Services
 ### MAD
 
 ## librdmacm
+
+### `rdma_get_devices`
+
+全局设备列表缓存：
+
+```c
+static LIST_HEAD(cma_dev_list);
+/* sorted based or index or guid, depends on kernel support */
+static struct ibv_device **dev_list;
+```
+
+调用链：
+
+```c
+rdma_get_devices()
+    sync_devices_list()
+        ibv_get_device_list(&numb_dev)
+        // 新增的设备将被插入 dev_list 和 cma_dev_list 并排序
+    list_for_each(&cma_dev_list, dev, entry)
+        ucma_init_device(dev)
+            ibv_open_device(cma_dev->dev)
+            ibv_query_device(cma_dev->verbs, &attr)
+```
 
 ### 地址绑定
 

@@ -73,7 +73,7 @@ LLM Infra 的本质是解决分布式系统的经典问题在新场景下的演�
 
 **生成式 AI**：学习已有数据的分布规律，自动生成符合数据特征的新内容。
 
-**自回归（Autoregressive）** 指模型基于已生成的历史序列逐步预测下一个词（Token）的生成方式。其核心特点是当前输出的生成严格依赖于之前所有输出，形成链式依赖关系。
+**自回归（Autoregressive）**指模型基于已生成的历史序列逐步预测下一个词（Token）的生成方式。其核心特点是当前输出的生成严格依赖于之前所有输出，形成链式依赖关系。
 
 “自回归”一词来自数学中的**自回归模型（Autoregressive Model，AR）**，定义为：
 
@@ -81,18 +81,18 @@ $$
 X_t = c + \phi_1 X_{t-1} + \phi_2 X_{t-2} + \cdots + \phi_p X_{t-p} + \epsilon_t
 $$
 
-- **X_t** 是当前时刻的值；
-- **\phi_i** 是历史数据的权重系数；
-- **\epsilon_t** 是随机噪声（如高斯分布）
+- $X_t$ 是当前时刻的值；
+- $\phi_i$ 是历史数据的权重系数；
+- $\epsilon_t$ 是随机噪声（如高斯分布）
 
-在LLM中，这一概念演变为：$P(\text{Token}_t | \text{Token}_1, \text{Token}_2, \ldots, \text{Token}_{t-1})$ 即第 $t$ 个 Token 的概率分布完全由前 $t-1$ 个 Token 决定，模型通过**迭代采样（如贪婪搜索或随机采样）**逐步生成完整序列。
+在 LLM 中，这一概念演变为：$P(\text{Token}_t | \text{Token}_1, \text{Token}_2, \ldots, \text{Token}_{t-1})$ 即第 $t$ 个 Token 的概率分布完全由前 $t-1$ 个 Token 决定，模型通过**迭代采样**逐步生成完整序列。
 
 !!! note "迭代采样"
 
-- 步骤1：基于当前 KV Cache，模型计算下一个 Token 的概率分布（如通过 Softmax）。
-- 步骤2：从分布中采样一个 Token（例如选择概率最高的 Token）。
-- 步骤3：将新 Token 加入序列，并更新 KV Cache（将新 Token 的 K/V 向量追加到缓存中）。
-- 重复：重复上述过程直至生成结束符（如 `<EOS>`）或达到最大长度。
+    - 步骤 1：基于当前 KV Cache，模型计算下一个 Token 的概率分布（如通过 Softmax）。
+    - 步骤 2：从分布中采样一个 Token（例如选择概率最高的 Token）。
+    - 步骤 3：将新 Token 加入序列，并更新 KV Cache（将新 Token 的 K/V 向量追加到缓存中）。
+    - 重复：重复上述过程直至生成结束符（如 `<EOS>`）或达到最大长度。
 
 !!! note "自回归的内存密集分析"
 
@@ -144,22 +144,22 @@ $$
 
 专家并行（Expert Parallelism, EP）：将模型中的专家（Expert）分布到不同设备（GPU）上。
 
-Token路由：每个输入Token会被动态分配到最相关的专家（如top-1或top-2）。
+Token 路由：每个输入 Token 会被动态分配到最相关的专家（如 top-1 或 top-2）。
 
 两个阶段：
 
-- Dispatch（调度阶段）：将输入Token分发给对应的专家。
-    - 路由计算：根据Token特征计算其与所有专家的匹配分数。
-    - Top-K选择：选出分数最高的K个专家（如top-2）。
-    - 跨设备发送：若目标专家在其他机器，需通过RDMA/NVLink发送Token数据。
+- Dispatch（调度阶段）：将输入 Token 分发给对应的专家。
+    - 路由计算：根据 Token 特征计算其与所有专家的匹配分数。
+    - Top-K 选择：选出分数最高的 K 个专家（如 top-2）。
+    - 跨设备发送：若目标专家在其他机器，需通过 RDMA/NVLink 发送 Token 数据。
 - Combine（组合阶段）：聚合专家计算结果并输出。
-    - 专家计算：各专家处理接收到的Token。
-    - 结果回传：将计算结果发回Token原属设备（可能跨机）。
+    - 专家计算：各专家处理接收到的 Token。
+    - 结果回传：将计算结果发回 Token 原属设备（可能跨机）。
     - 加权融合：按路由分数加权求和多个专家的输出。
 
 ### KV Cache
 
-仅编码器模型的 Self Attention 中带 Masked ，因此，在推理的时候，前面已经生成的 Token 不需要与后面的 Token 产生 Attention ，从而使得前面已经计算的 K 和 V 可以缓存起来。因此，KV Cache 应运而生。
+仅编码器模型的 Self Attention 中带 Masked，因此，在推理的时候，前面已经生成的 Token 不需要与后面的 Token 产生 Attention，从而使得前面已经计算的 K 和 V 可以缓存起来。因此，KV Cache 应运而生。
 
 KV Cache 是一种典型的以空间换时间（或者叫以内存换计算）的优化技术提升推理速度从而降低延迟。
 

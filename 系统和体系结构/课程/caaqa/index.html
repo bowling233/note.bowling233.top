@@ -1,0 +1,3326 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Bowling 的笔记本" name="description"/>
+<meta content="Bowling" name="author"/>
+<link href="https://note.bowling233.top/%E7%B3%BB%E7%BB%9F%E5%92%8C%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/%E8%AF%BE%E7%A8%8B/caaqa/" rel="canonical"/>
+<link href="../../%E5%AE%B9%E5%99%A8%E5%92%8C%E8%99%9A%E6%8B%9F%E5%8C%96/docker/" rel="prev"/>
+<link href="../csapp/" rel="next"/>
+<link href="../../../assets/bowling.svg" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.21" name="generator"/>
+<title>Computer Architecture: A Quantitative Approach - Bowling's TechStack</title>
+<link href="../../../assets/stylesheets/main.2a3383ac.min.css" rel="stylesheet"/>
+<link href="../../../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../../stylesheets/font.css" rel="stylesheet"/>
+<link href="../../../stylesheets/flink.css" rel="stylesheet"/>
+<link href="../../../stylesheets/neoteroi-mkdocs.css" rel="stylesheet"/>
+<link href="../../../stylesheets/custom.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.1.0/style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-lite-webfont@1.1.0/style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-tc-webfont@1.0.0/style.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><script src="../../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#computer-architecture-a-quantitative-approach">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Bowling's TechStack" class="md-header__button md-logo" data-md-component="logo" href="../../.." title="Bowling's TechStack">
+<img alt="logo" src="../../../assets/bowling.svg"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Bowling's TechStack
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Computer Architecture: A Quantitative Approach
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<a aria-label="Share" class="md-search__icon md-icon" data-clipboard="" data-clipboard-text="" data-md-component="search-share" href="javascript:void(0)" tabindex="-1" title="Share">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"></path></svg>
+</a>
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/bowling233/TechStack" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    TechStack
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../..">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../links/">
+        
+  
+  
+    
+  
+  友链
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../slides/">
+          
+  
+  
+    
+  
+  Slides
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E5%85%B6%E4%BB%96/software/">
+          
+  
+  
+    
+  
+  其他
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%91%E5%8E%9F%E7%94%9F/">
+          
+  
+  
+    
+  
+  应用领域
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E7%A7%91%E7%A0%94/">
+          
+  
+  
+    
+  
+  科研
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/Algorithm/">
+          
+  
+  
+    
+  
+  算法和理论
+
+        </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="../../">
+          
+  
+  
+    
+  
+  系统和体系结构
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E7%BD%91%E7%BB%9C/network/">
+          
+  
+  
+    
+  
+  网络
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E8%8D%89%E7%A8%BF/">
+          
+  
+  
+    
+  
+  草稿
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/build/">
+          
+  
+  
+    
+  
+  语言和软件开发
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/spack/">
+          
+  
+  
+    
+  
+  高性能
+
+        </a>
+</li>
+</ul>
+</div>
+</nav>
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Bowling's TechStack" class="md-nav__button md-logo" data-md-component="logo" href="../../.." title="Bowling's TechStack">
+<img alt="logo" src="../../../assets/bowling.svg"/>
+</a>
+    Bowling's TechStack
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/bowling233/TechStack" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+</div>
+<div class="md-source__repository">
+    TechStack
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../..">
+<span class="md-ellipsis">
+    首页
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../links/">
+<span class="md-ellipsis">
+    友链
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../slides/">
+<span class="md-ellipsis">
+    Slides
+    
+  </span>
+</a>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Slides
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+<span class="md-ellipsis">
+    其他
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            其他
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/software/">
+<span class="md-ellipsis">
+    软件使用经验和技巧
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E6%94%B6%E8%97%8F%E5%A4%B9/">
+<span class="md-ellipsis">
+    收藏夹
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%87%AA%E5%8A%A8%E5%8C%96/">
+<span class="md-ellipsis">
+    自动化
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%F0%9F%93%92%20%E5%BF%AB%E6%8D%B7%E9%94%AE/">
+<span class="md-ellipsis">
+    📒 快捷键
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%F0%9F%93%92%20%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%BF%E7%94%A8%E7%BB%8F%E9%AA%8C%E5%92%8C%E6%8A%80%E5%B7%A7/">
+<span class="md-ellipsis">
+    📒 操作系统使用经验和技巧
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%F0%9F%93%96%20Vim%20%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">
+<span class="md-ellipsis">
+    📖 Vim 实用技巧
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%F0%9F%93%96%20%E4%BA%BA%E6%9C%88%E7%A5%9E%E8%AF%9D/">
+<span class="md-ellipsis">
+    📖 人月神话
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%F0%9F%94%97%20%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B1%BB%E7%A7%91%E6%99%AE%E8%A7%86%E9%A2%91/">
+<span class="md-ellipsis">
+    🔗 计算机类科普视频
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_9" id="__nav_4_9_label" tabindex="0">
+<span class="md-ellipsis">
+    写作
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_9_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_9">
+<span class="md-nav__icon md-icon"></span>
+            写作
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E5%86%99%E4%BD%9C/mkslides/">
+<span class="md-ellipsis">
+    MkSlides
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_10" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="0">
+<span class="md-ellipsis">
+    求职
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_10_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_10">
+<span class="md-nav__icon md-icon"></span>
+            求职
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E6%B1%82%E8%81%8C/code-draft/">
+<span class="md-ellipsis">
+    手撕代码
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E6%B1%82%E8%81%8C/code/">
+<span class="md-ellipsis">
+    手撕代码
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E6%B1%82%E8%81%8C/interview/">
+<span class="md-ellipsis">
+    面经
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E6%B1%82%E8%81%8C/trade/">
+<span class="md-ellipsis">
+    行业
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_11" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_11" id="__nav_4_11_label" tabindex="0">
+<span class="md-ellipsis">
+    生活
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_11_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_11">
+<span class="md-nav__icon md-icon"></span>
+            生活
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%E4%B8%AA%E4%BA%BA%E5%8F%91%E5%B1%95/">
+<span class="md-ellipsis">
+    个人发展
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%E6%81%8B%E7%88%B1%E3%80%81%E5%A9%9A%E5%A7%BB%E4%B8%8E%E5%AE%B6%E5%BA%AD/">
+<span class="md-ellipsis">
+    恋爱、婚姻与家庭
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%E6%9D%82%E4%BA%8B/">
+<span class="md-ellipsis">
+    杂事
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%E7%A4%BE%E4%BC%9A/">
+<span class="md-ellipsis">
+    社会
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%F0%9F%93%96%20%E4%BA%B2%E5%AF%86%E5%85%B3%E7%B3%BB%EF%BC%88%E7%AC%AC%208%20%E7%89%88%EF%BC%89/">
+<span class="md-ellipsis">
+    📖 亲密关系（第 8 版）
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%F0%9F%93%96%20%E4%BA%B2%E5%AF%86%E5%85%B3%E7%B3%BB%EF%BC%9A%E9%80%9A%E5%BE%80%E7%81%B5%E9%AD%82%E7%9A%84%E6%A1%A5%E6%A2%81/">
+<span class="md-ellipsis">
+    📖 亲密关系：通往灵魂的桥梁
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%F0%9F%93%96%20%E5%88%BB%E6%84%8F%E7%BB%83%E4%B9%A0/">
+<span class="md-ellipsis">
+    📖 刻意练习
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E7%94%9F%E6%B4%BB/%F0%9F%93%96%20%E5%8E%9F%E7%94%9F%E5%AE%B6%E5%BA%AD%C2%B7%E5%A9%9A%E6%81%8B%E7%89%88/">
+<span class="md-ellipsis">
+    📖 原生家庭·婚恋版
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_12" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/">
+<span class="md-ellipsis">
+    计算机图形学
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_4_12" id="__nav_4_12_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_4_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_12">
+<span class="md-nav__icon md-icon"></span>
+            计算机图形学
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/cgp-opengl-c2/">
+<span class="md-ellipsis">
+    计算机图形学编程（使用 OpenGL 和 C++）
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/course/">
+<span class="md-ellipsis">
+    课程笔记
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/fcg4/">
+<span class="md-ellipsis">
+    Fundamentals of Computer Graphics, Fourth Edition
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6/openglpg9/">
+<span class="md-ellipsis">
+    OpenGL Programming Guide: The Official Guide to Learning OpenGL, Version 4.5 with SPIR-V
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_13" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4_13" id="__nav_4_13_label" tabindex="0">
+<span class="md-ellipsis">
+    课程笔记
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_13_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_4_13">
+<span class="md-nav__icon md-icon"></span>
+            课程笔记
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%F0%9F%8F%AB%20%E9%A9%AC%E5%85%8B%E6%80%9D%E4%B8%BB%E4%B9%89%E5%8E%9F%E7%90%86%EF%BC%88H%EF%BC%89/">
+<span class="md-ellipsis">
+    🏫 马克思主义原理（H）
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4_13_2" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/">
+<span class="md-ellipsis">
+    量子信息基础
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_4_13_2" id="__nav_4_13_2_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_4_13_2_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_4_13_2">
+<span class="md-nav__icon md-icon"></span>
+            量子信息基础
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/QuTiP/">
+<span class="md-ellipsis">
+    QuTiP
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec1/">
+<span class="md-ellipsis">
+    信息、熵和计算复杂度
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec2/">
+<span class="md-ellipsis">
+    光子和它们在复向量空间中的量子态
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec3/">
+<span class="md-ellipsis">
+    自旋、量子比特与线性算子
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec4/">
+<span class="md-ellipsis">
+    多量子比特和量子纠缠
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec5/">
+<span class="md-ellipsis">
+    量子系统随时间的演化
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec6/">
+<span class="md-ellipsis">
+    量子电路
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%85%B6%E4%BB%96/%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0/%E9%87%8F%E5%AD%90%E4%BF%A1%E6%81%AF%E5%9F%BA%E7%A1%80/lec7/">
+<span class="md-ellipsis">
+    量子纠错
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-ellipsis">
+    应用领域
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            应用领域
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5_1" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%91%E5%8E%9F%E7%94%9F/">
+<span class="md-ellipsis">
+    云原生
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+            云原生
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%91%E5%8E%9F%E7%94%9F/k8s/">
+<span class="md-ellipsis">
+    K8S
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5_2" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">
+<span class="md-ellipsis">
+    人工智能
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+            人工智能
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/LLM/">
+<span class="md-ellipsis">
+    LLM
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/d2l/">
+<span class="md-ellipsis">
+    Dive into Deep Learning
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/llm_infra/">
+<span class="md-ellipsis">
+    LLM Infra
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/pytorch/">
+<span class="md-ellipsis">
+    PyTorch
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/">
+<span class="md-ellipsis">
+    📒 人工智能
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%F0%9F%93%96%20Dive%20into%20Deep%20Learning/">
+<span class="md-ellipsis">
+    📖 Dive into Deep Learning
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%F0%9F%93%96%20PyTorch%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AE%9E%E6%88%98/">
+<span class="md-ellipsis">
+    📖 PyTorch 深度学习实战
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/%F0%9F%93%96%20%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">
+<span class="md-ellipsis">
+    📖 深度学习
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5_3" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/">
+<span class="md-ellipsis">
+    数据库
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_5_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+            数据库
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/%F0%9F%93%92%20ClickHouse/">
+<span class="md-ellipsis">
+    ClickHouse
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/%F0%9F%93%92%20ElasticSearch/">
+<span class="md-ellipsis">
+    📒 ElasticSearch
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/%F0%9F%93%92%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BC%96%E7%A8%8B/">
+<span class="md-ellipsis">
+    📒 数据库编程
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/%F0%9F%93%92%20%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%90%E7%BB%B4/">
+<span class="md-ellipsis">
+    📒 数据库运维
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E5%BA%94%E7%94%A8%E9%A2%86%E5%9F%9F/%E6%95%B0%E6%8D%AE%E5%BA%93/%F0%9F%93%96%20%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E6%A6%82%E5%BF%B5/">
+<span class="md-ellipsis">
+    📖 数据库系统概念
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_6" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E7%A7%91%E7%A0%94/">
+<span class="md-ellipsis">
+    科研
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_6_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+            科研
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%A7%91%E7%A0%94/%E8%8D%89%E7%A8%BF/">
+<span class="md-ellipsis">
+    草稿
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%A7%91%E7%A0%94/%F0%9F%93%92%20%E7%A7%91%E7%A0%94%E5%86%99%E4%BD%9C/">
+<span class="md-ellipsis">
+    📒 科研写作
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_6_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+<span class="md-ellipsis">
+    论文研读
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_6_4">
+<span class="md-nav__icon md-icon"></span>
+            论文研读
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%A7%91%E7%A0%94/%E8%AE%BA%E6%96%87%E7%A0%94%E8%AF%BB/smartns/">
+<span class="md-ellipsis">
+    SmartNS
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_6_4_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_6_4_2" id="__nav_6_4_2_label" tabindex="0">
+<span class="md-ellipsis">
+    10.1145
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_6_4_2_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_6_4_2">
+<span class="md-nav__icon md-icon"></span>
+            10.1145
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%A7%91%E7%A0%94/%E8%AE%BA%E6%96%87%E7%A0%94%E8%AF%BB/10.1145/3651890.3672271/">
+<span class="md-ellipsis">
+    [SIGCOMM'24] Understanding the Host Network
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_7" type="checkbox"/>
+<label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+<span class="md-ellipsis">
+    算法和理论
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_7_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_7">
+<span class="md-nav__icon md-icon"></span>
+            算法和理论
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/Algorithm/">
+<span class="md-ellipsis">
+    算法与数据结构
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA/">
+<span class="md-ellipsis">
+    计算理论
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%F0%9F%8F%AB%20%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%9F%BA%E7%A1%80/">
+<span class="md-ellipsis">
+    🏫 数据结构基础
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_7_4" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+<span class="md-ellipsis">
+    高级数据结构
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_7_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_7_4">
+<span class="md-nav__icon md-icon"></span>
+            高级数据结构
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/lec1/">
+<span class="md-ellipsis">
+    摊还分析
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/lec12/">
+<span class="md-ellipsis">
+    Local Search 局部搜索
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/lec15/">
+<span class="md-ellipsis">
+    外部排序 External Sorting
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/lec3/">
+<span class="md-ellipsis">
+    倒排索引
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/lec6/">
+<span class="md-ellipsis">
+    回溯
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%AE%97%E6%B3%95%E5%92%8C%E7%90%86%E8%AE%BA/%E9%AB%98%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%A0%91%E4%B8%8E%E5%A0%86/">
+<span class="md-ellipsis">
+    树与堆 Tree and Heap
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_8" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../">
+<span class="md-ellipsis">
+    系统和体系结构
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="true" aria-labelledby="__nav_8_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_8">
+<span class="md-nav__icon md-icon"></span>
+            系统和体系结构
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../ISA/">
+<span class="md-ellipsis">
+    ISA
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../bus/">
+<span class="md-ellipsis">
+    总线
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../cpu/">
+<span class="md-ellipsis">
+    CPU
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../memory/">
+<span class="md-ellipsis">
+    内存
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../nvidia-driver/">
+<span class="md-ellipsis">
+    NVIDIA
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../storage/">
+<span class="md-ellipsis">
+    存储
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../%E6%95%B0%E5%AD%97%E7%94%B5%E8%B7%AF/">
+<span class="md-ellipsis">
+    数字电路
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../%F0%9F%93%96%20%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">
+<span class="md-ellipsis">
+    📖 深入理解计算机系统
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../Linux/">
+<span class="md-ellipsis">
+    Linux
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_8_10" id="__nav_8_10_label" tabindex="">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_8_10">
+<span class="md-nav__icon md-icon"></span>
+            Linux
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/pkg/">
+<span class="md-ellipsis">
+    发行版与包管理
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/tdah/">
+<span class="md-ellipsis">
+    The Debian Administrator's Handbook
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/tlpi/">
+<span class="md-ellipsis">
+    The Linux Programming Interface
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B/">
+<span class="md-ellipsis">
+    启动过程
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_8_10_6" id="__nav_8_10_6_label" tabindex="0">
+<span class="md-ellipsis">
+    Os
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_6_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_10_6">
+<span class="md-nav__icon md-icon"></span>
+            Os
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/os/note1-context_sw/">
+<span class="md-ellipsis">
+    操作系统小记：进程生命周期
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10_7" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../Linux/%E5%86%85%E6%A0%B8%E4%B8%8E%E9%A9%B1%E5%8A%A8/">
+<span class="md-ellipsis">
+    内核与驱动
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_8_10_7" id="__nav_8_10_7_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_7_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_10_7">
+<span class="md-nav__icon md-icon"></span>
+            内核与驱动
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E5%86%85%E6%A0%B8%E4%B8%8E%E9%A9%B1%E5%8A%A8/ebpf/">
+<span class="md-ellipsis">
+    eBPF
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E5%86%85%E6%A0%B8%E4%B8%8E%E9%A9%B1%E5%8A%A8/%F0%9F%93%96%20Linux%20Device%20Drivers%20%283rd%29/">
+<span class="md-ellipsis">
+    📖 Linux Device Drivers (3rd)
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E5%86%85%E6%A0%B8%E4%B8%8E%E9%A9%B1%E5%8A%A8/%F0%9F%93%96%20Linux%20Kernel%20Development%20%283rd%29/">
+<span class="md-ellipsis">
+    📖 Linux Kernel Development (3rd)
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10_8" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../Linux/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+<span class="md-ellipsis">
+    文件系统
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_8_10_8" id="__nav_8_10_8_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_8_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_10_8">
+<span class="md-nav__icon md-icon"></span>
+            文件系统
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/%F0%9F%93%92%20%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%EF%BC%9ANFS/">
+<span class="md-ellipsis">
+    📒 内核源码：NFS
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_8_10_9" id="__nav_8_10_9_label" tabindex="0">
+<span class="md-ellipsis">
+    源码笔记
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_9_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_10_9">
+<span class="md-nav__icon md-icon"></span>
+            源码笔记
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E6%BA%90%E7%A0%81%E7%AC%94%E8%AE%B0/bonding/">
+<span class="md-ellipsis">
+    drivers/net/bonding
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E6%BA%90%E7%A0%81%E7%AC%94%E8%AE%B0/bpftrace/">
+<span class="md-ellipsis">
+    bpftrace
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../Linux/%E6%BA%90%E7%A0%81%E7%AC%94%E8%AE%B0/systemd-networkd/">
+<span class="md-ellipsis">
+    systemd-networkd
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_10_10" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../Linux/%E7%BD%91%E7%BB%9C/">
+<span class="md-ellipsis">
+    网络
+    
+  </span>
+</a>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_8_10_10_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_10_10">
+<span class="md-nav__icon md-icon"></span>
+            网络
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_8_11" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../%E5%AE%B9%E5%99%A8%E5%92%8C%E8%99%9A%E6%8B%9F%E5%8C%96/">
+<span class="md-ellipsis">
+    容器和虚拟化
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_8_11" id="__nav_8_11_label" tabindex="">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_8_11_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_8_11">
+<span class="md-nav__icon md-icon"></span>
+            容器和虚拟化
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../%E5%AE%B9%E5%99%A8%E5%92%8C%E8%99%9A%E6%8B%9F%E5%8C%96/apptainer/">
+<span class="md-ellipsis">
+    Apptainer/Singularity
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../%E5%AE%B9%E5%99%A8%E5%92%8C%E8%99%9A%E6%8B%9F%E5%8C%96/docker/">
+<span class="md-ellipsis">
+    Docker
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_8_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_8_12" id="__nav_8_12_label" tabindex="">
+<span class="md-ellipsis">
+    课程
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_8_12_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_8_12">
+<span class="md-nav__icon md-icon"></span>
+            课程
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Computer Architecture: A Quantitative Approach
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Computer Architecture: A Quantitative Approach
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_1">
+<span class="md-ellipsis">
+      第一章 量化设计与分析基础
+    </span>
+</a>
+<nav aria-label="第一章 量化设计与分析基础" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#15">
+<span class="md-ellipsis">
+      1.5 集成电路中功率和能量的趋势
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#17">
+<span class="md-ellipsis">
+      1.7 可靠性
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_2">
+<span class="md-ellipsis">
+      第三章 指令级并行及其利用
+    </span>
+</a>
+<nav aria-label="第三章 指令级并行及其利用" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31">
+<span class="md-ellipsis">
+      3.1 指令级并行：概念与挑战
+    </span>
+</a>
+<nav aria-label="3.1 指令级并行：概念与挑战" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ilpinstruction-level-parallelism">
+<span class="md-ellipsis">
+      什么是 ILP（Instruction-Level Parallelism）？
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_3">
+<span class="md-ellipsis">
+      数据依赖与冒险
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_4">
+<span class="md-ellipsis">
+      控制依赖
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31_1">
+<span class="md-ellipsis">
+      3.1 动态调度
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32-ilp">
+<span class="md-ellipsis">
+      3.2 利用 ILP 的基本编译器技术
+    </span>
+</a>
+<nav aria-label="3.2 利用 ILP 的基本编译器技术" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_5">
+<span class="md-ellipsis">
+      基本流水线调度和循环展开
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_6">
+<span class="md-ellipsis">
+      循环展开和调度总结
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32">
+<span class="md-ellipsis">
+      3.2 分支预测
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#33">
+<span class="md-ellipsis">
+      3.3 基于硬件的投机执行
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#simd-gpu">
+<span class="md-ellipsis">
+      第四章 向量、SIMD 和 GPU 体系结构中的数据级并行
+    </span>
+</a>
+<nav aria-label="第四章 向量、SIMD 和 GPU 体系结构中的数据级并行" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#41">
+<span class="md-ellipsis">
+      4.1 向量体系结构
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#-vector-chaning-forwarding">
+<span class="md-ellipsis">
+      - Vector Chaning：向量指令只需等待第一个元素，后续元素沿流水线顺畅移动。就是 Forwarding 的向量版本。
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_7">
+<span class="md-ellipsis">
+      第五章 线程级并行
+    </span>
+</a>
+<nav aria-label="第五章 线程级并行" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#51">
+<span class="md-ellipsis">
+      5.1 多处理器
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#52">
+<span class="md-ellipsis">
+      5.2 一致性
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../csapp/">
+<span class="md-ellipsis">
+    Computer Systems: A Programmer's Perspective
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../osc/">
+<span class="md-ellipsis">
+    Operating System Concepts
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../riscvalp/">
+<span class="md-ellipsis">
+    RISC-V Assembly Language Programming: Unlock the Power of the RISC-V Instruction Set
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_9" type="checkbox"/>
+<label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+<span class="md-ellipsis">
+    网络
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_9_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_9">
+<span class="md-nav__icon md-icon"></span>
+            网络
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/network/">
+<span class="md-ellipsis">
+    网络技术
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/proxy/">
+<span class="md-ellipsis">
+    代理技术
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/vpn/">
+<span class="md-ellipsis">
+    VPN 技术
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%92%20%E4%BB%A3%E7%90%86%E4%B8%8E%E8%99%9A%E6%8B%9F%E4%B8%93%E7%94%A8%E7%BD%91/">
+<span class="md-ellipsis">
+    📒 代理与虚拟专用网
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%92%20%E7%89%A9%E7%90%86%E5%92%8C%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">
+<span class="md-ellipsis">
+    📒 物理和数据链路层
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%92%20%E7%BD%91%E7%BB%9C%E7%AC%94%E8%AE%B0/">
+<span class="md-ellipsis">
+    📒 网络笔记
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%96%20Head%20First%20HTML/">
+<span class="md-ellipsis">
+    📖 Head First HTML
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%96%20%E5%9B%BE%E8%A7%A3%20HTTP/">
+<span class="md-ellipsis">
+    📖 图解 HTTP
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%F0%9F%93%96%20%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%9A%E8%87%AA%E9%A1%B6%E5%90%91%E4%B8%8B%E6%96%B9%E6%B3%95/">
+<span class="md-ellipsis">
+    📖 计算机网络：自顶向下方法
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_9_10" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%E4%B9%A6%E7%B1%8D/">
+<span class="md-ellipsis">
+    书籍
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_9_10" id="__nav_9_10_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_9_10_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_9_10">
+<span class="md-nav__icon md-icon"></span>
+            书籍
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%E4%B9%A6%E7%B1%8D/tii1/">
+<span class="md-ellipsis">
+    TCP/IP Illustrated, Volume 1: The Protocols
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%E4%B9%A6%E7%B1%8D/ulni/">
+<span class="md-ellipsis">
+    Understanding Linux Network Internals
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_9_11" type="checkbox"/>
+<label class="md-nav__link" for="__nav_9_11" id="__nav_9_11_label" tabindex="0">
+<span class="md-ellipsis">
+    华为
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_9_11_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_9_11">
+<span class="md-nav__icon md-icon"></span>
+            华为
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%E5%8D%8E%E4%B8%BA/ap/">
+<span class="md-ellipsis">
+    AP
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E7%BD%91%E7%BB%9C/%E5%8D%8E%E4%B8%BA/huawei/">
+<span class="md-ellipsis">
+    华为路由器/交换机笔记
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_10" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/">
+<span class="md-ellipsis">
+    草稿
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_10_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_10">
+<span class="md-nav__icon md-icon"></span>
+            草稿
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/ZFS/">
+<span class="md-ellipsis">
+    ZFS
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/draft/">
+<span class="md-ellipsis">
+    零散笔记
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/lvm/">
+<span class="md-ellipsis">
+    Logical Volume Manager
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/%E5%88%86%E5%B8%83%E5%BC%8F%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+<span class="md-ellipsis">
+    分布式文件系统
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/%F0%9F%93%92%20%E4%B8%B4%E6%97%B6%E7%AC%94%E8%AE%B0/">
+<span class="md-ellipsis">
+    📒 临时笔记
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_10_7" type="checkbox"/>
+<label class="md-nav__link" for="__nav_10_7" id="__nav_10_7_label" tabindex="0">
+<span class="md-ellipsis">
+    HPC
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_10_7_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_10_7">
+<span class="md-nav__icon md-icon"></span>
+            HPC
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/HPC/%F0%9F%93%92%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/">
+<span class="md-ellipsis">
+    📒 性能分析
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/HPC/%F0%9F%93%92%20%E8%AE%BF%E5%AD%98%E4%BC%98%E5%8C%96/">
+<span class="md-ellipsis">
+    📒 访存优化
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_10_7_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_10_7_3" id="__nav_10_7_3_label" tabindex="0">
+<span class="md-ellipsis">
+    工具
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_10_7_3_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_10_7_3">
+<span class="md-nav__icon md-icon"></span>
+            工具
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/HPC/%E5%B7%A5%E5%85%B7/%E7%BC%96%E8%AF%91%E5%A5%97%E4%BB%B6/">
+<span class="md-ellipsis">
+    编译套件
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_10_8" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/RFC/">
+<span class="md-ellipsis">
+    RFC
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_10_8" id="__nav_10_8_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_10_8_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_10_8">
+<span class="md-nav__icon md-icon"></span>
+            RFC
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/RFC/4506%20XDR/">
+<span class="md-ellipsis">
+    RFC 4506 - XDR: External Data Representation Standard
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/RFC/5531%20RPC/">
+<span class="md-ellipsis">
+    RFC 5531 - RPC: Remote Procedure Call Protocol Specification Version 2
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/RFC/5661%20NFSv4.1/">
+<span class="md-ellipsis">
+    RFC 5661 - Network File System (NFS) Version 4 Minor Version 1 Protocol
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%8D%89%E7%A8%BF/RFC/7530%20NFSv4/">
+<span class="md-ellipsis">
+    RFC 7530 - Network File System (NFS) Version 4 Protocol
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_11" type="checkbox"/>
+<label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+<span class="md-ellipsis">
+    语言和软件开发
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_11_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_11">
+<span class="md-nav__icon md-icon"></span>
+            语言和软件开发
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_11_1" type="checkbox"/>
+<label class="md-nav__link" for="__nav_11_1" id="__nav_11_1_label" tabindex="0">
+<span class="md-ellipsis">
+    工具
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_11_1_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_11_1">
+<span class="md-nav__icon md-icon"></span>
+            工具
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/build/">
+<span class="md-ellipsis">
+    构建
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/debug/">
+<span class="md-ellipsis">
+    调试
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/git/">
+<span class="md-ellipsis">
+    代码管理
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/shell/">
+<span class="md-ellipsis">
+    Shell
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/test/">
+<span class="md-ellipsis">
+    测试
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E5%B7%A5%E5%85%B7/%F0%9F%93%92%20%E5%BC%80%E5%8F%91%E5%B7%A5%E5%85%B7/">
+<span class="md-ellipsis">
+    📒 开发工具
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_11_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+<span class="md-ellipsis">
+    编译
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_11_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_11_2">
+<span class="md-nav__icon md-icon"></span>
+            编译
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E7%BC%96%E8%AF%91/compiler/">
+<span class="md-ellipsis">
+    编译原理
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E7%BC%96%E8%AF%91/gnu/">
+<span class="md-ellipsis">
+    GNU Compiler Collection
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E7%BC%96%E8%AF%91/llvm/">
+<span class="md-ellipsis">
+    LLVM
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_11_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_11_3" id="__nav_11_3_label" tabindex="0">
+<span class="md-ellipsis">
+    语言
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_11_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_11_3">
+<span class="md-nav__icon md-icon"></span>
+            语言
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/C/">
+<span class="md-ellipsis">
+    C
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/CSTL/">
+<span class="md-ellipsis">
+    C 标准库
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/Python/">
+<span class="md-ellipsis">
+    Python
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/SOP4/">
+<span class="md-ellipsis">
+    Python 程序设计基础（第四版）
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/flutter/">
+<span class="md-ellipsis">
+    Flutter
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/fortran/">
+<span class="md-ellipsis">
+    Fortran
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/go/">
+<span class="md-ellipsis">
+    Go
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/java/">
+<span class="md-ellipsis">
+    Java
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/%F0%9F%93%92%20C%20%E5%92%8C%20C%2B%2B%20%E9%AB%98%E7%BA%A7%E8%AF%9D%E9%A2%98/">
+<span class="md-ellipsis">
+    📒 C 和 C++ 高级话题
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/%F0%9F%93%92%20%E4%BB%A3%E7%A0%81%E9%A3%8E%E6%A0%BC/">
+<span class="md-ellipsis">
+    📒 代码风格
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E8%AF%AD%E8%A8%80%E5%92%8C%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91/%E8%AF%AD%E8%A8%80/%F0%9F%93%96%20C%2B%2B%20Primer/">
+<span class="md-ellipsis">
+    📖 C++ Primer
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12" type="checkbox"/>
+<label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+<span class="md-ellipsis">
+    高性能
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_12_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_12">
+<span class="md-nav__icon md-icon"></span>
+            高性能
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/spack/">
+<span class="md-ellipsis">
+    Spack
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_12_2" id="__nav_12_2_label" tabindex="0">
+<span class="md-ellipsis">
+    并行程序设计
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_12_2_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_12_2">
+<span class="md-nav__icon md-icon"></span>
+            并行程序设计
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/C%2B%2B%20%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/">
+<span class="md-ellipsis">
+    C++ 并发编程
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E5%B9%B6%E8%A1%8C%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1/CUDA/">
+<span class="md-ellipsis">
+    CUDA
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_12_3" id="__nav_12_3_label" tabindex="0">
+<span class="md-ellipsis">
+    性能分析与调优
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_12_3_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_12_3">
+<span class="md-nav__icon md-icon"></span>
+            性能分析与调优
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E4%B8%8E%E8%B0%83%E4%BC%98/intro/">
+<span class="md-ellipsis">
+    性能分析简介
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E4%B8%8E%E8%B0%83%E4%BC%98/tools/">
+<span class="md-ellipsis">
+    性能分析工具
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12_4" type="checkbox"/>
+<div class="md-nav__link md-nav__container">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/">
+<span class="md-ellipsis">
+    网络
+    
+  </span>
+</a>
+<label class="md-nav__link" for="__nav_12_4" id="__nav_12_4_label" tabindex="0">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-expanded="false" aria-labelledby="__nav_12_4_label" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_12_4">
+<span class="md-nav__icon md-icon"></span>
+            网络
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/algorithm/">
+<span class="md-ellipsis">
+    通信算法
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/interconnection/">
+<span class="md-ellipsis">
+    互联网络
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/mpi/">
+<span class="md-ellipsis">
+    MPI
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12_4_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_12_4_5" id="__nav_12_4_5_label" tabindex="0">
+<span class="md-ellipsis">
+    源码阅读
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_12_4_5_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_12_4_5">
+<span class="md-nav__icon md-icon"></span>
+            源码阅读
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/libfabric/">
+<span class="md-ellipsis">
+    libfabric
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/rdma-core/">
+<span class="md-ellipsis">
+    rdma-core 与 linux/drivers/infiniband
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/ucx/">
+<span class="md-ellipsis">
+    UCX
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_12_4_6" type="checkbox"/>
+<label class="md-nav__link" for="__nav_12_4_6" id="__nav_12_4_6_label" tabindex="0">
+<span class="md-ellipsis">
+    编程
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_12_4_6_label" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_12_4_6">
+<span class="md-nav__icon md-icon"></span>
+            编程
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E7%BC%96%E7%A8%8B/dpdk/">
+<span class="md-ellipsis">
+    DPDK
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E7%BC%96%E7%A8%8B/ibverbs/">
+<span class="md-ellipsis">
+    IB Verbs
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E7%BC%96%E7%A8%8B/mlx5dv/">
+<span class="md-ellipsis">
+    mlx5dv 与 DevX
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../../%E9%AB%98%E6%80%A7%E8%83%BD/%E7%BD%91%E7%BB%9C/%E7%BC%96%E7%A8%8B/rdmacm/">
+<span class="md-ellipsis">
+    RDMA CM
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_1">
+<span class="md-ellipsis">
+      第一章 量化设计与分析基础
+    </span>
+</a>
+<nav aria-label="第一章 量化设计与分析基础" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#15">
+<span class="md-ellipsis">
+      1.5 集成电路中功率和能量的趋势
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#17">
+<span class="md-ellipsis">
+      1.7 可靠性
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_2">
+<span class="md-ellipsis">
+      第三章 指令级并行及其利用
+    </span>
+</a>
+<nav aria-label="第三章 指令级并行及其利用" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31">
+<span class="md-ellipsis">
+      3.1 指令级并行：概念与挑战
+    </span>
+</a>
+<nav aria-label="3.1 指令级并行：概念与挑战" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#ilpinstruction-level-parallelism">
+<span class="md-ellipsis">
+      什么是 ILP（Instruction-Level Parallelism）？
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_3">
+<span class="md-ellipsis">
+      数据依赖与冒险
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_4">
+<span class="md-ellipsis">
+      控制依赖
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#31_1">
+<span class="md-ellipsis">
+      3.1 动态调度
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32-ilp">
+<span class="md-ellipsis">
+      3.2 利用 ILP 的基本编译器技术
+    </span>
+</a>
+<nav aria-label="3.2 利用 ILP 的基本编译器技术" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_5">
+<span class="md-ellipsis">
+      基本流水线调度和循环展开
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_6">
+<span class="md-ellipsis">
+      循环展开和调度总结
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#32">
+<span class="md-ellipsis">
+      3.2 分支预测
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#33">
+<span class="md-ellipsis">
+      3.3 基于硬件的投机执行
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#simd-gpu">
+<span class="md-ellipsis">
+      第四章 向量、SIMD 和 GPU 体系结构中的数据级并行
+    </span>
+</a>
+<nav aria-label="第四章 向量、SIMD 和 GPU 体系结构中的数据级并行" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#41">
+<span class="md-ellipsis">
+      4.1 向量体系结构
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#-vector-chaning-forwarding">
+<span class="md-ellipsis">
+      - Vector Chaning：向量指令只需等待第一个元素，后续元素沿流水线顺畅移动。就是 Forwarding 的向量版本。
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#_7">
+<span class="md-ellipsis">
+      第五章 线程级并行
+    </span>
+</a>
+<nav aria-label="第五章 线程级并行" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#51">
+<span class="md-ellipsis">
+      5.1 多处理器
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#52">
+<span class="md-ellipsis">
+      5.2 一致性
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<a class="md-content__button md-icon" href="https://github.com/bowling233/TechStack/blob/master/docs/系统和体系结构/课程/caaqa.md" rel="edit" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"></path></svg>
+</a>
+<h1 id="computer-architecture-a-quantitative-approach">Computer Architecture: A Quantitative Approach<a class="headerlink" href="#computer-architecture-a-quantitative-approach" title="Permanent link">¶</a></h1>
+<h2 id="_1">第一章 量化设计与分析基础<a class="headerlink" href="#_1" title="Permanent link">¶</a></h2>
+<h3 id="15">1.5 集成电路中功率和能量的趋势<a class="headerlink" href="#15" title="Permanent link">¶</a></h3>
+<p>系统设计者考虑三个问题：</p>
+<ul>
+<li>处理器需要的<strong>最大功率</strong>是多少？如果供电系统不能满足峰值功率需求，往往会导致电压下降，设备无法正常工作。</li>
+<li><strong>持续的功率</strong>是多少？一般称为 <strong>TDP（Thermal Design Power）</strong>，通常比峰值功耗低，比平均功耗高。一般系统的供电和散热系统都和 TDP 相匹配。</li>
+<li>
+<p>能耗和能耗效率。通常<strong>以能耗而不是功率作为指标</strong>，不论是 PC 还是云服务场景。</p>
+<div class="admonition exmaple">
+<p class="admonition-title">Exmaple</p>
+<p>处理器 A 比 B 功率高 <span class="arithmatex">\(20%\)</span>，但只需要 <span class="arithmatex">\(70%\)</span> 的时间来完成任务。<strong>对于一个相同的任务</strong>，A 的能耗为 <span class="arithmatex">\(1.2 \times 0.7 = 0.84\)</span>，比 B 少。</p>
+</div>
+</li>
+</ul>
+<p>处理器内的能耗分为两种：</p>
+<ul>
+<li>动态能耗（dynamic energy）：切换晶体管开关消耗的能量 <span class="arithmatex">\(E_{\text{dynamic}} \propto C \times V^2\)</span>，与电容负载和电压有关。20 年来，处理器的电压从 5V 降到 1V，正是为了降低动态能耗。</li>
+<li>静态能耗（static energy）：晶体管漏电流消耗的能量 <span class="arithmatex">\(E_{\text{static}} \propto I \times V\)</span>，随着晶体管数量的增加而增加。比如一些高性能芯片中使用大量的 SRAM 缓存，将显著增加静态能耗。</li>
+</ul>
+<h3 id="17">1.7 可靠性<a class="headerlink" href="#17" title="Permanent link">¶</a></h3>
+<p>基础设施服务商提供 SLA（Service Level Agreement）或者 SLO（Service Level Objective）来保证服务的可靠性。在 SLA 中，系统在 Service Accomplishment 和 Service Interruption 两个状态间切换，切换的原因分别为 failure 和 restoration。相应地定义了一下可靠性指标：</p>
+<ul>
+<li>
+<p>可靠性指标：</p>
+<ul>
+<li>MTTF（Mean Time To Failure）：正常运行的平均时间</li>
+<li>FIT（Failure In Time）：每 <span class="arithmatex">\(10^9\)</span> 小时的故障次数</li>
+</ul>
+<p>上面两个指标互为倒数。比如，MTTF 为 <span class="arithmatex">\(10^6\)</span> 小时，则 FIT 为 <span class="arithmatex">\(\frac{10^9}{10^6} = 10^3\)</span>。</p>
+<ul>
+<li>MTTR（Mean Time To Repair）</li>
+<li>MTBF（Mean Time Between Failure）= MTTF + MTTR</li>
+<li>可用性指标：</li>
+</ul>
+<div class="arithmatex">\[
+\text{Availability} = \frac{\text{MTTF}}{\text{MTTF} + \text{MTTR}}
+\]</div>
+</li>
+</ul>
+<p>要计算多个子系统组成的系统的可靠性（MTTF），一般先计算每个子系统的 FIT，相加得到整个系统的 FIT，取倒数即为 MTTF。</p>
+<h2 id="_2">第三章 指令级并行及其利用<a class="headerlink" href="#_2" title="Permanent link">¶</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p>课上内容对应关系：</p>
+<ul>
+<li>3-1 讲：合并了 3.1、3.2 和 3.4、3.5 节，内容包括循环展开和动态调度。</li>
+<li>3-2 讲：3.3 节，简单的分支预测技术</li>
+<li>3-3 讲：3.6 节，改进 Tomasulo 进行分支预测</li>
+<li>3-4 讲：3.7、3.8 节，多发射和超长指令字</li>
+</ul>
+</div>
+<p>技术及其总结：TODO</p>
+<h3 id="31">3.1 指令级并行：概念与挑战<a class="headerlink" href="#31" title="Permanent link">¶</a></h3>
+<h4 id="ilpinstruction-level-parallelism">什么是 ILP（Instruction-Level Parallelism）？<a class="headerlink" href="#ilpinstruction-level-parallelism" title="Permanent link">¶</a></h4>
+<ul>
+<li><strong>基本块（basic block）</strong>：一段代码，除入口外没有其他<strong>转入</strong>分支，除出口外没有其他<strong>转出</strong>分支。</li>
+</ul>
+<p>basic block 中的并行度很小，因为这些指令之间的依赖程度比较高。需要跨越多个 basic block 利用 ILP。循环级并行是最简单的 ILP。</p>
+<ul>
+<li><strong>循环级并行（Loop-Level Parallelism）</strong>：一些简单的循环如 <code>x[i] = x[i] + y[i]</code> 的每次迭代之间没有依赖关系，可以并行执行。可以通过<strong>编译器静态展开循环</strong>或利用<strong>硬件动态展开循环</strong>。替代方法还有<strong>使用向量处理器</strong>（第四章）。</li>
+</ul>
+<h4 id="_3">数据依赖与冒险<a class="headerlink" href="#_3" title="Permanent link">¶</a></h4>
+<p>判断<strong>指令间的依赖关系</strong>：</p>
+<ul>
+<li><strong>数据依赖（真依赖）</strong>：指令 <span class="arithmatex">\(i\)</span> 的结果被指令 <span class="arithmatex">\(j\)</span> 使用，或指令之间存在依赖链。<ul>
+<li>两种方法：保持依赖但避免冒险（通过<strong>调度</strong>，可以由硬件或软件完成），通过转换代码来消除依赖。</li>
+</ul>
+</li>
+<li>
+<p><strong>名称依赖</strong>：两条指令使用相同的寄存器或内存地址（称为<strong>名称</strong>），在该名称上没有数据流动时。</p>
+<p>假设指令 <span class="arithmatex">\(i\)</span> 位于指令 <span class="arithmatex">\(j\)</span> 之前：</p>
+<ul>
+<li><span class="arithmatex">\(j\)</span> 对 <span class="arithmatex">\(i\)</span> 读取的名称执行<strong>写</strong>操作时，称为<strong>反依赖（antidependence）</strong></li>
+<li><span class="arithmatex">\(i\)</span> 和 <span class="arithmatex">\(j\)</span> 都对相同的名称执行<strong>写</strong>操作时，称为<strong>输出依赖（output dependence）</strong></li>
+</ul>
+<p>这两种情况都必须保证指令执行的顺序。但是由于不是<strong>真依赖</strong>，所以只需要改变这些指令使用的名称，就不再冲突，这些指令可以重排或同时执行。</p>
+</li>
+<li>
+<p><strong>数据冒险</strong>：假设指令 <span class="arithmatex">\(i\)</span> 位于指令 <span class="arithmatex">\(j\)</span> 之前，<span class="arithmatex">\(j\)</span> 可能发生的冒险有：</p>
+<ul>
+<li><strong>RAW 写后读</strong>：<span class="arithmatex">\(j\)</span> 必须在 <span class="arithmatex">\(i\)</span> 写入之后读取，对应<strong>真依赖</strong>。</li>
+<li><strong>WAW 写后写</strong>：<span class="arithmatex">\(j\)</span> 必须在 <span class="arithmatex">\(i\)</span> 写入之后写入，对应<strong>输出依赖</strong>。</li>
+<li><strong>WAR 读后写</strong>：<span class="arithmatex">\(j\)</span> 必须在 <span class="arithmatex">\(i\)</span> 读取之后写入，对应<strong>反依赖</strong>。对于大多数流水线，所有读操作都比写操作早一些，所以不会发生 WAR。</li>
+<li>没有 RAR 冒险。</li>
+</ul>
+</li>
+</ul>
+<h4 id="_4">控制依赖<a class="headerlink" href="#_4" title="Permanent link">¶</a></h4>
+<ul>
+<li><strong>控制依赖</strong>：控制依赖并<strong>不是一个必须保持</strong>的关键特性。在不影响程序正确执行的情况下，可以执行一些还不应当执行的指令。<ul>
+<li>
+<p>通常要求<strong>保护异常行为</strong>，即改变指令的执行顺序不得导致程序引发任何新异常。</p>
+<p>比如：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="w">    </span><span class="nf">beq</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">L1</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="w">    </span><span class="nf">ld</span><span class="w">  </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x2</span><span class="p">)</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nl">L1:</span>
+</span></code></pre></div>
+<p><code>beq</code> 和 <code>ld</code> 之间没有数据依赖，只有控制依赖。可以调换这两条指令的顺序，但是可能导致 <code>ld</code> 触发异常（段错误）。可能需要在执行分支操作时<strong>忽略该异常</strong>。<strong>投机执行（speculation）</strong>可以解决这一异常。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="31_1">3.1 动态调度<a class="headerlink" href="#31_1" title="Permanent link">¶</a></h3>
+<p>顺序发射和执行的最大问题在于：如果当前指令 stall，那么后续指令都无法继续。在硬件具有多个功能单元（Functional Unit，FU）的情况下，其他功能单元可能空闲。我们可以通过<strong>动态调度</strong>将其利用起来。</p>
+<div class="admonition note">
+<p class="admonition-title">技术：动态调度与乱序执行</p>
+<p>由硬件重新安排指令的<strong>执行</strong>顺序（根据可用的功能单元等决定），以最大化 ILP。动态调度仍然保持顺序发射。</p>
+<blockquote>
+<p>动态调度的一些好处：</p>
+<ul>
+<li>最重要的好处：通过调度执行其他指令，使处理器能够承受无法预测的延迟，比如缓存未命中等。</li>
+<li>转移编译器的任务，编译器不需要为不同的流水线分别生成代码。</li>
+<li>解决一些编译期无法确定的依赖问题。</li>
+</ul>
+</blockquote>
+<p>按顺序解码和发射指令，但让指令在操作数可用时立即执行，这就是<strong>顺序发射、乱序执行（out-of-order execution）</strong>。ID 阶段被分为 <strong>Issue</strong> 和 <strong>Read Operands</strong> 两个阶段：</p>
+<ul>
+<li>Issue 阶段<strong>检查结构冒险</strong>：如果对应的 FU 忙，就等待。</li>
+<li>Read Operands 阶段<strong>等待数据冒险</strong>：如果所需的操作数不可用，就等待。</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">乱序执行带来了 WAR 和 WAW 冒险</p>
+<p>RISC-V 流水线本来不存在 WAR（流水线写操作比读操作晚），但乱序执行时可能会发生。</p>
+<p>同样地，必须考虑 WAW。这两种冒险都通过 stall 后面的指令完成。</p>
+</div>
+</div>
+<p>与前文编译器执行的静态调度相比：</p>
+<ul>
+<li>静态调度通过隔离相互依赖的指令，尝试尽可能消除 stall。</li>
+<li>动态调度尝试在依赖存在时，通过调度抵消 stall。</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">动态调度技术 1：记分板（scoreboard）</p>
+<p>假设有：</p>
+<ul>
+<li>2 个浮点乘法</li>
+<li>1 个浮点加法</li>
+<li>1 个浮点除法</li>
+<li>1 个整数单元用于所有内存引用、分支和整数运算</li>
+</ul>
+<p>指令四步：</p>
+<ul>
+<li>发射：指令对应的功能单元空闲，没有相同目的寄存器的指令在执行（防 WAW）。</li>
+<li>读操作数：如果没有先前发射的活跃指令将写入，那么操作数就是可用的。当操作数可用时，记分板告诉功能单元读取操作数并开始执行。解决 RAW。</li>
+<li>执行</li>
+<li>写回：需要检查 WAR，如果有冲突则 stall。</li>
+</ul>
+<p>使用这样一张图来记录 scoreboard</p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-type="image" data-width="auto" href="../caaqa.assets/scoreboard.png"><img alt="scoreboard" src="../caaqa.assets/scoreboard.png"/></a></p>
+<p>中间状态例：</p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-type="image" data-width="auto" href="../caaqa.assets/scoreboard_1.png"><img alt="scoreboard_1" src="../caaqa.assets/scoreboard_1.png"/></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">动态调度技术 2：Tomasulo 方法</p>
+<p>Tomasulo 方法通过<strong>寄存器重命名（register renaming）</strong>解决了 WAR 和 WAW 冒险。</p>
+<div class="admonition example">
+<p class="admonition-title">寄存器重命名</p>
+<p>例如，对于下面的指令：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f8</span>
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a><span class="nf">fsub.d</span><span class="w">  </span><span class="no">f8</span><span class="p">,</span><span class="w"> </span><span class="no">f10</span><span class="p">,</span><span class="w"> </span><span class="no">f14</span>
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a><span class="nf">fmul.d</span><span class="w">  </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f10</span><span class="p">,</span><span class="w"> </span><span class="no">f8</span>
+</span></code></pre></div>
+<p>注意 <code>fsub</code> 指令利用 <code>f8</code> 暂存自己的结果，供 <code>fmul</code> 使用，但需要先等待 <code>fadd</code> 使用完 <code>f8</code>。可以用于暂存 <code>fsub</code> 结果的寄存器重命名，解决 <code>fadd</code> 和 <code>fsub</code> 之间的反依赖问题。</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f8</span>
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a><span class="nf">fsub.d</span><span class="w">  </span><span class="no">S</span><span class="p">,</span><span class="w"> </span><span class="no">f10</span><span class="p">,</span><span class="w"> </span><span class="no">f14</span>
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a><span class="nf">fmul.d</span><span class="w">  </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f10</span><span class="p">,</span><span class="w"> </span><span class="no">S</span>
+</span></code></pre></div>
+</div>
+<p>寄存器重命名通过称为<strong>保留站（reservation station）</strong>的硬件结构实现，它与功能单元相连，存储等待发射的指令和它们的操作数。操作数直接发送到保留站，执行时直接从保留站读取，不经过寄存器。操作数在功能单元之间的传递通过<strong>公共数据总线（common data bus，CDB）</strong>完成。</p>
+</div>
+<p>与 scoreboard 相比，Tomasulo 使用重命名解决了反依赖和输出依赖，并且可以改进实现后文将介绍的投机执行。</p>
+<h3 id="32-ilp">3.2 利用 ILP 的基本编译器技术<a class="headerlink" href="#32-ilp" title="Permanent link">¶</a></h3>
+<h4 id="_5">基本流水线调度和循环展开<a class="headerlink" href="#_5" title="Permanent link">¶</a></h4>
+<p>为了避免 stall，相关指令要在流水线中拉开距离。编译器根据流水线中可用的功能单元（Functional Unit）来执行调度。</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>对于下面这个简单的循环：</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a href="#__codelineno-3-1" id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">999</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="mi">-1</span><span class="p">)</span>
+</span><span id="__span-3-2"><a href="#__codelineno-3-2" id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+</span></code></pre></div>
+<p>不做调度就是：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a href="#__codelineno-4-1" id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="nl">Loop:</span><span class="w">   </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-4-2"><a href="#__codelineno-4-2" id="__codelineno-4-2" name="__codelineno-4-2"></a><span class="w">        </span><span class="nf">stall</span>
+</span><span id="__span-4-3"><a href="#__codelineno-4-3" id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-4-4"><a href="#__codelineno-4-4" id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">        </span><span class="nf">stall</span>
+</span><span id="__span-4-5"><a href="#__codelineno-4-5" id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">        </span><span class="nf">stall</span>
+</span><span id="__span-4-6"><a href="#__codelineno-4-6" id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-4-7"><a href="#__codelineno-4-7" id="__codelineno-4-7" name="__codelineno-4-7"></a><span class="w">        </span><span class="nf">addi</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span>
+</span><span id="__span-4-8"><a href="#__codelineno-4-8" id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="w">        </span><span class="nf">bne</span><span class="w">     </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">Loop</span>
+</span></code></pre></div>
+<p>最简单的调度：将 <code>addi</code> 上移，与浮点计算 overlap：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-5-1"><a href="#__codelineno-5-1" id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nl">Loop:</span><span class="w">   </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-5-2"><a href="#__codelineno-5-2" id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="w">        </span><span class="nf">addi</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span>
+</span><span id="__span-5-3"><a href="#__codelineno-5-3" id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-5-4"><a href="#__codelineno-5-4" id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">        </span><span class="nf">stall</span>
+</span><span id="__span-5-5"><a href="#__codelineno-5-5" id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="w">        </span><span class="nf">stall</span>
+</span><span id="__span-5-6"><a href="#__codelineno-5-6" id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-5-7"><a href="#__codelineno-5-7" id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">        </span><span class="nf">bne</span><span class="w">     </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">Loop</span>
+</span></code></pre></div>
+<p>对于上面这段代码，运算只有 3 个周期（fld、fadd.d、fsd），其余都是循环的开销。循环展开力图减少循环开销所占的比例：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-6-1"><a href="#__codelineno-6-1" id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="nl">Loop:</span><span class="w">   </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-2"><a href="#__codelineno-6-2" id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-6-3"><a href="#__codelineno-6-3" id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-4"><a href="#__codelineno-6-4" id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-5"><a href="#__codelineno-6-5" id="__codelineno-6-5" name="__codelineno-6-5"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f8</span><span class="p">,</span><span class="w"> </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-6-6"><a href="#__codelineno-6-6" id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f8</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-7"><a href="#__codelineno-6-7" id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">-16</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-8"><a href="#__codelineno-6-8" id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f12</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-6-9"><a href="#__codelineno-6-9" id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f12</span><span class="p">,</span><span class="w"> </span><span class="mi">-16</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-10"><a href="#__codelineno-6-10" id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f14</span><span class="p">,</span><span class="w"> </span><span class="mi">-24</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-11"><a href="#__codelineno-6-11" id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f16</span><span class="p">,</span><span class="w"> </span><span class="no">f14</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-6-12"><a href="#__codelineno-6-12" id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f16</span><span class="p">,</span><span class="w"> </span><span class="mi">-24</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-6-13"><a href="#__codelineno-6-13" id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">        </span><span class="nf">addi</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">-32</span>
+</span><span id="__span-6-14"><a href="#__codelineno-6-14" id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">        </span><span class="nf">bne</span><span class="w">     </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">Loop</span>
+</span></code></pre></div>
+<p>这要求循环次数是展开因子的整数倍。在实际程序中，循环展开一般分为两段：第一段不展开，执行 <span class="arithmatex">\(n \mod k\)</span> 次，第二段循环展开 <span class="arithmatex">\(n / k\)</span> 次。</p>
+<p>上面这段代码还有真依赖，我们还可以进行调度，让其在流水线中完全没有 stall：</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-7-1"><a href="#__codelineno-7-1" id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="nl">Loop:</span><span class="w">   </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-2"><a href="#__codelineno-7-2" id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-3"><a href="#__codelineno-7-3" id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="mi">-16</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-4"><a href="#__codelineno-7-4" id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">        </span><span class="nf">fld</span><span class="w">     </span><span class="no">f14</span><span class="p">,</span><span class="w"> </span><span class="mi">-24</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-5"><a href="#__codelineno-7-5" id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-7-6"><a href="#__codelineno-7-6" id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f8</span><span class="p">,</span><span class="w"> </span><span class="no">f6</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-7-7"><a href="#__codelineno-7-7" id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f12</span><span class="p">,</span><span class="w"> </span><span class="no">f0</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-7-8"><a href="#__codelineno-7-8" id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="w">        </span><span class="nf">fadd.d</span><span class="w">  </span><span class="no">f16</span><span class="p">,</span><span class="w"> </span><span class="no">f14</span><span class="p">,</span><span class="w"> </span><span class="no">f2</span>
+</span><span id="__span-7-9"><a href="#__codelineno-7-9" id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f4</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-10"><a href="#__codelineno-7-10" id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f8</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-11"><a href="#__codelineno-7-11" id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f12</span><span class="p">,</span><span class="w"> </span><span class="mi">-16</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-12"><a href="#__codelineno-7-12" id="__codelineno-7-12" name="__codelineno-7-12"></a><span class="w">        </span><span class="nf">fsd</span><span class="w">     </span><span class="no">f16</span><span class="p">,</span><span class="w"> </span><span class="mi">-24</span><span class="p">(</span><span class="no">x1</span><span class="p">)</span>
+</span><span id="__span-7-13"><a href="#__codelineno-7-13" id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="w">        </span><span class="nf">addi</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="mi">-32</span>
+</span><span id="__span-7-14"><a href="#__codelineno-7-14" id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">        </span><span class="nf">bne</span><span class="w">     </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">Loop</span>
+</span></code></pre></div>
+</div>
+<h4 id="_6">循环展开和调度总结<a class="headerlink" href="#_6" title="Permanent link">¶</a></h4>
+<ul>
+<li>确保循环迭代是独立的，没有依赖关系。</li>
+<li>使用不同的寄存器避免名称依赖。</li>
+<li>调整循环测试、跳转指令。</li>
+</ul>
+<p>此外有一些限制因素需要考虑：</p>
+<ul>
+<li>展开得越多，效果逐渐减弱。</li>
+<li>代码体积增加，需要考虑 I-cache 的影响。</li>
+<li>造成寄存器压力，需要考虑寄存器分配。</li>
+</ul>
+<h3 id="32">3.2 分支预测<a class="headerlink" href="#32" title="Permanent link">¶</a></h3>
+<p>对于分支跳转指令，PC 在分支指令的 ID 阶段末尾确定，此时完成地址计算和比较。在此之前，我们需要预测分支的结果，以便在 IF 阶段就开始取指。</p>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 1：静态分支预测</p>
+<blockquote>
+<p>该技术在书本 C.2 节介绍。</p>
+</blockquote>
+<p>书本将下面四种方法成为静态分支预测，它们都不需要运行时的动态信息。静态分支预测需要编译器考虑，使代码的路径与硬件预测尽可能一致。</p>
+<ul>
+<li><strong>Stall Pipeline</strong>：在分支指令后<strong>重做 IF（相当于一次 stall）</strong>，即分支指令的下一条为 IF IF ID ...。缺点是如果 untaken，就浪费了一次 IF。</li>
+<li><strong>静态预测</strong>：predicted-not-taken 或 predicted-taken。编译器需要考虑硬件实现，使代码的路径与硬件预测尽可能一致。</li>
+<li>
+<p><strong>分支延迟槽（branch delay slot）</strong>：在分支指令后放一个<strong>不论分支结果如何都会执行</strong>的指令以避免浪费。编译器需要找到合适的指令填充。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a href="#__codelineno-8-1" id="__codelineno-8-1" name="__codelineno-8-1"></a>branch instruction
+</span><span id="__span-8-2"><a href="#__codelineno-8-2" id="__codelineno-8-2" name="__codelineno-8-2"></a>sequential instruction
+</span><span id="__span-8-3"><a href="#__codelineno-8-3" id="__codelineno-8-3" name="__codelineno-8-3"></a>branch target if taken
+</span></code></pre></div>
+</li>
+</ul>
+</div>
+<div class="admonition info">
+<p class="admonition-title">补充一些术语</p>
+<ul>
+<li>
+<p>基于方向的静态预测：</p>
+<p>根据分支目标相对分支指令的位置，分支可区分为<strong>前向分支（forward branch）</strong>和<strong>后向分支（backward branch）</strong>。通常，后向分支是循环的分支，前向分支是其他分支。因此，<strong>基于方向的静态预测</strong>通常将前向分支预测为 untaken，后向分支预测为 taken，以充分利用循环的特点。</p>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 2：动态预测</p>
+<blockquote>
+<p>该部分在书本 C.2 节介绍。</p>
+</blockquote>
+<ul>
+<li>Branch-Prediction Buffer：一块内存，<strong>使用分支指令的低位作为索引</strong>，存储一个 bit 表示最近一次分支的结果。</li>
+<li>2-bit prediction：上一种方法单个 bit 太不稳定，比如一个大部分情况下 taken 的分支，遇到一次 untaken，就会导致两次错误预测。2-bit prediction <strong>使用两个 bit</strong>，相当于为这种情况增加了一个缓冲区，表现更加稳定。自然地，可以扩展到 n-bit prediction。当计数器为 <span class="arithmatex">\(\geq 2^{n-1}\)</span> 时，预测 taken。</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 3：相关分支预测（correlating branch predictor）</p>
+<blockquote>
+<p>该技术在书本 3.3 节介绍。</p>
+</blockquote>
+<p><span class="arithmatex">\((m, n)\)</span> 相关分支预测器就是将 <span class="arithmatex">\(n\)</span> 比特分支预测器复制 <span class="arithmatex">\(m\)</span> 份，并<strong>将历史记录存入移位计数器对这些预测器进行索引</strong>。这样一共需要两层索引，又称为 two-level predictor。</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>考虑下面的代码：</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a href="#__codelineno-9-1" id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">aa</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-9-2"><a href="#__codelineno-9-2" id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="w">    </span><span class="n">aa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-9-3"><a href="#__codelineno-9-3" id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bb</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-9-4"><a href="#__codelineno-9-4" id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">    </span><span class="n">bb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-9-5"><a href="#__codelineno-9-5" id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">aa</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">bb</span><span class="p">)</span>
+</span></code></pre></div>
+<p>最后一个分支的结果与前两个分支有关。于是我们希望能够利用前两个分支的结果来预测第三个分支：</p>
+<ul>
+<li>如果前两个分支都满足，预测第三个分支满足</li>
+<li>如果前两个分支只满足一个，预测第三个分支不满足</li>
+<li>如果前两个分支都不满足，再单独预测第三个分支。</li>
+</ul>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 4：锦标赛预测器（Tournament Predictor）</p>
+<blockquote>
+<p>该技术在书本 3.3 节介绍。</p>
+</blockquote>
+<p>使用<strong>全局（global）和局部（local）两个预测器</strong>，用一个<strong>选择器</strong>在它们中选择。</p>
+<ul>
+<li>全局预测器使用分支历史进行索引。</li>
+<li>局部预测器使用分支地址进行索引。</li>
+<li>选择器使用分支地址进行索引，使用饱和计数器。</li>
+</ul>
+<p>锦标赛预测器表现好的关健在于：能够为不同分支选择正确的预测模式。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 5：分支目标缓冲（Branch Target Buffer/Cache，BTB）</p>
+<blockquote>
+<p>该技术在书本 3.9 节浅浅提及。</p>
+</blockquote>
+<p>前述的分支预测技术仅预测是否执行。BTB 在此基础上缓冲、预测分支的目标地址。</p>
+<blockquote>
+<p>大致的工作流程（不重要）</p>
+<ul>
+<li><strong>IF 阶段</strong>：将 PC 发送到 BTB，寻找条目是否存在。</li>
+<li><strong>ID 阶段</strong>：<ul>
+<li>条目存在：<ul>
+<li>take：顺利执行</li>
+<li>not take：flush pipeline，删除 BTB 条目</li>
+</ul>
+</li>
+<li>条目不存在：<ul>
+<li>take：插入 BTB 条目</li>
+<li>not take：顺利执行</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>一些变种：直接缓存指令而不是地址；指令和地址都缓存；缓存多条路径（take 和 not take 都缓存）。</p>
+</div>
+<p>上面几个重要的分支预测技术示意图如下：</p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-type="image" data-width="auto" href="../caaqa.assets/ch3.branch.drawio"><div class="mxgraph" data-mxgraph='{"toolbar": "zoom", "tooltips": "1", "border": 5, "resize": "1", "edit": "_blank", "xml": "&lt;mxfile host=\"app.diagrams.net\" agent=\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0\" version=\"25.0.3\"&gt;\n  &lt;diagram name=\"\u7b2c 1 \u9875\" id=\"jeffgRpPhFh-9Y3TLQ8j\"&gt;\n    &lt;mxGraphModel dx=\"2242\" dy=\"793\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"1\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\"&gt;\n      &lt;root&gt;\n        &lt;mxCell id=\"0\"/&gt;\n        &lt;mxCell id=\"1\" parent=\"0\"/&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-36\" value=\"\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;dashed=1;dashPattern=8 8;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"565\" y=\"208.21\" width=\"180\" height=\"100\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-37\" value=\"\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;dashed=1;dashPattern=8 8;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"565\" y=\"308.21\" width=\"180\" height=\"83.57\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-1\" value=\"1bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-10\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-2\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-3\" value=\"1bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-10\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-4\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-5\" value=\"1bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-10\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-6\" value=\"10\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-7\" value=\"1bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-10\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-8\" value=\"11\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-9\" value=\"&amp;lt;div&amp;gt;&amp;amp;nbsp;4 entry&amp;lt;/div&amp;gt;Branch-Prediction Buffer\" style=\"text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-80\" y=\"400\" width=\"140\" height=\"30\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-10\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"120\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-11\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"80\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-12\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"120\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-13\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"80\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-14\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"120\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-15\" value=\"10\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"80\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-16\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"120\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-17\" value=\"11\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"80\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-18\" value=\"&amp;lt;div&amp;gt;&amp;lt;span style=&amp;quot;background-color: initial;&amp;quot;&amp;gt;&amp;amp;nbsp;&amp;lt;/span&amp;gt;&amp;lt;span style=&amp;quot;background-color: initial;&amp;quot;&amp;gt;4 entry&amp;amp;nbsp;&amp;lt;/span&amp;gt;2-bit&amp;lt;/div&amp;gt;Branch-Prediction Buffer\" style=\"text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"60\" y=\"400\" width=\"140\" height=\"30\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-21\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-19\" target=\"y26xg8ZNitns2AXiVfkz-20\" edge=\"1\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-19\" value=\"0\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"240\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-22\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-20\" target=\"y26xg8ZNitns2AXiVfkz-19\" edge=\"1\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"&gt;\n            &lt;Array as=\"points\"&gt;\n              &lt;mxPoint x=\"20\" y=\"280\"/&gt;\n              &lt;mxPoint x=\"-40\" y=\"280\"/&gt;\n            &lt;/Array&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-20\" value=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"10\" y=\"240\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-27\" value=\"00\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"90\" y=\"220\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-28\" value=\"01\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"130\" y=\"220\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-29\" value=\"10\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"130\" y=\"260\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-30\" value=\"11\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"90\" y=\"260\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-31\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-30\" target=\"y26xg8ZNitns2AXiVfkz-29\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"240\" y=\"320\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"290\" y=\"270\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-32\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-29\" target=\"y26xg8ZNitns2AXiVfkz-30\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"160\" y=\"269.89\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"200\" y=\"269.89\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-33\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-29\" target=\"y26xg8ZNitns2AXiVfkz-28\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"230\" y=\"269.89\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"190\" y=\"269.89\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-35\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-28\" target=\"y26xg8ZNitns2AXiVfkz-29\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"119.77\" y=\"240\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"119.77\" y=\"200\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-36\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-27\" target=\"y26xg8ZNitns2AXiVfkz-28\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"110\" y=\"200\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"110\" y=\"240\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-37\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-28\" target=\"y26xg8ZNitns2AXiVfkz-27\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"110\" y=\"200\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"150\" y=\"200\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-38\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"-50\" y=\"370\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-39\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"80\" y=\"370\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-40\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-41\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"200\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-42\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-43\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"200\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-44\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-45\" value=\"10\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"200\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-46\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-47\" value=\"11\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"200\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-49\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"280\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-50\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"280\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-51\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"280\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-52\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"280\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-53\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"320\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-54\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"320\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-55\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"320\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-56\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"320\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-57\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"360\" y=\"290\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-58\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"360\" y=\"310\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-59\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"360\" y=\"330\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-60\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"360\" y=\"350\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-61\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"200\" y=\"370\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-69\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;\" parent=\"1\" source=\"y26xg8ZNitns2AXiVfkz-62\" target=\"y26xg8ZNitns2AXiVfkz-66\" edge=\"1\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"414\" y=\"260\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"394\" y=\"240\" as=\"targetPoint\"/&gt;\n            &lt;Array as=\"points\"&gt;\n              &lt;mxPoint x=\"340\" y=\"250\"/&gt;\n            &lt;/Array&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-62\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"270\" y=\"240\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-64\" value=\"history\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"230\" y=\"240\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-65\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"360\" y=\"270\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-66\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"320\" y=\"270\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-67\" value=\"10\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"280\" y=\"270\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-68\" value=\"11\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"270\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"y26xg8ZNitns2AXiVfkz-70\" value=\"&amp;lt;div&amp;gt;&amp;lt;span style=&amp;quot;background-color: initial;&amp;quot;&amp;gt;&amp;amp;nbsp;&amp;lt;/span&amp;gt;&amp;lt;span style=&amp;quot;background-color: initial;&amp;quot;&amp;gt;4 entry&amp;amp;nbsp;&amp;lt;/span&amp;gt;(2,2)&amp;lt;/div&amp;gt;Correlating Predictors\" style=\"text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"240\" y=\"400\" width=\"150\" height=\"30\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-1\" value=\"shift register\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"255\" y=\"220\" width=\"70\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-2\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"661\" y=\"313.64\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-3\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"621\" y=\"313.64\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-4\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"661\" y=\"333.64\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-5\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"621\" y=\"333.64\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-10\" value=\"00\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"456\" y=\"208.20999999999995\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-11\" value=\"01\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"496\" y=\"208.20999999999995\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-12\" value=\"10\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"496\" y=\"248.20999999999998\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-13\" value=\"11\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"456\" y=\"248.20999999999998\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-14\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-13\" target=\"Q8c1Q4CfDWvFuh6HEksq-12\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"606\" y=\"308.21\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"656\" y=\"258.21\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-15\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-12\" target=\"Q8c1Q4CfDWvFuh6HEksq-13\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"526\" y=\"258.09999999999997\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"566\" y=\"258.09999999999997\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-16\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-12\" target=\"Q8c1Q4CfDWvFuh6HEksq-11\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"596\" y=\"258.09999999999997\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"556\" y=\"258.09999999999997\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-17\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-11\" target=\"Q8c1Q4CfDWvFuh6HEksq-12\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"485.77\" y=\"228.20999999999995\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"485.77\" y=\"188.20999999999995\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-18\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-10\" target=\"Q8c1Q4CfDWvFuh6HEksq-11\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"476\" y=\"188.20999999999995\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"476\" y=\"228.20999999999995\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-19\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-11\" target=\"Q8c1Q4CfDWvFuh6HEksq-10\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"476\" y=\"188.20999999999995\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"516\" y=\"188.20999999999995\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-20\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"621\" y=\"361.78\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-23\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"658\" y=\"284.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-24\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"698\" y=\"284.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-25\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;\" parent=\"1\" source=\"Q8c1Q4CfDWvFuh6HEksq-26\" target=\"Q8c1Q4CfDWvFuh6HEksq-29\" edge=\"1\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"752\" y=\"254.21\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"732\" y=\"234.21\" as=\"targetPoint\"/&gt;\n            &lt;Array as=\"points\"&gt;\n              &lt;mxPoint x=\"678\" y=\"244.21\"/&gt;\n            &lt;/Array&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-26\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"608\" y=\"234.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-27\" value=\"history\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"568\" y=\"234.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-28\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"698\" y=\"264.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-29\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"658\" y=\"264.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-32\" value=\"shift register\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"593\" y=\"214.21\" width=\"70\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-34\" value=\"Global\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"565\" y=\"288.21\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-35\" value=\"Local\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"565\" y=\"308.21\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-38\" value=\"Selector\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"480\" y=\"270.2\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-39\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;\" parent=\"1\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"535\" y=\"311.78\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"555\" y=\"291.78\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-40\" value=\"\" style=\"endArrow=classic;html=1;rounded=0;\" parent=\"1\" edge=\"1\"&gt;\n          &lt;mxGeometry width=\"50\" height=\"50\" relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"535\" y=\"311.78\" as=\"sourcePoint\"/&gt;\n            &lt;mxPoint x=\"555\" y=\"331.78\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-41\" value=\"&amp;lt;div&amp;gt;Tournament Predictor&amp;lt;/div&amp;gt;\" style=\"text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"511\" y=\"400\" width=\"150\" height=\"30\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-77\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"440\" y=\"293.84\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-78\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;strokeColor=none;fillColor=none;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"440\" y=\"313.84\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-79\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"480\" y=\"313.84\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-80\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"480\" y=\"293.84\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"Q8c1Q4CfDWvFuh6HEksq-81\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" parent=\"1\" vertex=\"1\"&gt;\n          &lt;mxGeometry x=\"440\" y=\"341.97999999999996\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-1\" value=\"addr\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"830\" y=\"218.20999999999998\" width=\"140\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-2\" value=\"00\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"790\" y=\"218.20999999999998\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-4\" value=\"01\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"790\" y=\"238.20999999999998\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-6\" value=\"10\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"790\" y=\"258.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-8\" value=\"11\" style=\"rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"790\" y=\"278.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-9\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"970\" y=\"218.20999999999998\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-10\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"970\" y=\"238.20999999999998\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-11\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"970\" y=\"258.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-23\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;\" edge=\"1\" parent=\"1\" source=\"aau-N5RtOHvzrqO1vwc6-12\" target=\"aau-N5RtOHvzrqO1vwc6-19\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"&gt;\n            &lt;Array as=\"points\"&gt;\n              &lt;mxPoint x=\"990\" y=\"343.21\"/&gt;\n            &lt;/Array&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-12\" value=\"2bit\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"970\" y=\"278.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-13\" value=\"PC[1:0]\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"790\" y=\"298.21\" width=\"40\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-14\" value=\"addr\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"830\" y=\"238.20999999999998\" width=\"140\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-15\" value=\"addr\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"830\" y=\"258.21\" width=\"140\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-22\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;\" edge=\"1\" parent=\"1\" source=\"aau-N5RtOHvzrqO1vwc6-16\" target=\"aau-N5RtOHvzrqO1vwc6-19\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-16\" value=\"addr\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"830\" y=\"278.21\" width=\"140\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-17\" value=\"Predicted PC\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"857.5\" y=\"198.20999999999998\" width=\"85\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-18\" value=\"Prediction State\" style=\"text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"960\" y=\"193.20999999999998\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-24\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;\" edge=\"1\" parent=\"1\" source=\"aau-N5RtOHvzrqO1vwc6-19\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"&gt;\n            &lt;mxPoint x=\"900\" y=\"383.21\" as=\"targetPoint\"/&gt;\n          &lt;/mxGeometry&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-19\" value=\"\" style=\"ellipse;whiteSpace=wrap;html=1;aspect=fixed;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"890\" y=\"333.21\" width=\"20\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-21\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;\" edge=\"1\" parent=\"1\" source=\"aau-N5RtOHvzrqO1vwc6-20\" target=\"aau-N5RtOHvzrqO1vwc6-19\"&gt;\n          &lt;mxGeometry relative=\"1\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-20\" value=\"PC+4\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"810\" y=\"333.21\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-25\" value=\"Next PC\" style=\"rounded=0;whiteSpace=wrap;html=1;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"870\" y=\"383.21\" width=\"60\" height=\"20\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n        &lt;mxCell id=\"aau-N5RtOHvzrqO1vwc6-26\" value=\"&amp;lt;div&amp;gt;Branch Target Buffer&amp;lt;/div&amp;gt;\" style=\"text;html=1;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=14;\" vertex=\"1\" parent=\"1\"&gt;\n          &lt;mxGeometry x=\"830\" y=\"400\" width=\"150\" height=\"30\" as=\"geometry\"/&gt;\n        &lt;/mxCell&gt;\n      &lt;/root&gt;\n    &lt;/mxGraphModel&gt;\n  &lt;/diagram&gt;\n&lt;/mxfile&gt;"}' style="max-width:100%;border:1px solid transparent;"></div></a></p>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 6：集成取指单元（Integrated Instruction Fetch Units）</p>
+<blockquote>
+<p>该技术在书本第 3.9 节介绍。</p>
+</blockquote>
+<p>为了满足多发射处理器的需求，现代处理器开始使用集成的取指单元，把下列功能集成到一个单元中：</p>
+<ul>
+<li>分支预测</li>
+<li>指令预取（Instruction Prefetching）</li>
+<li>指令缓存（Instruction memory access and buffering）</li>
+</ul>
+<p>设计的集成取指单元需要实现上述功能，从而在一个时钟周期内取多条指令。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">分支预测技术 7：返回地址预测器（Return Address Predictors）</p>
+<blockquote>
+<p>该技术在书本第 3.12 的案例探究中浅浅提及。</p>
+</blockquote>
+<p>将返回地址记录在类似于栈的 buffer 中，避免到内存中取返回地址。</p>
+</div>
+<h3 id="33">3.3 基于硬件的投机执行<a class="headerlink" href="#33" title="Permanent link">¶</a></h3>
+<blockquote>
+<p>本讲内容对应书本 3.6 节</p>
+</blockquote>
+<p>对于宽发射（wide-issue）处理器来说，分支预测、动态调度仍不足以充分利用 ILP，可能每个周期都需要执行分支指令，这就需要<strong>投机执行（speculative execution）</strong>。</p>
+<p>在使用分支预测和动态调度时，我们总是假设分支预测是正确的，从而进行<strong>取指和发射</strong>。这样做只能部分地将基本块重叠，还需要等待分支结果才能执行下一基本块。投机执行在此之上更进一步，将分支预测推入<strong>执行</strong>阶段。</p>
+<div class="admonition note">
+<p class="admonition-title">技术：投机执行（Speculation）</p>
+<p>在控制依赖被解决之前就执行指令。投机执行需要具有撤销错误执行的指令序列的能力。</p>
+<p>为了能够撤销指令的副作用，我们为执行阶段添加提交（commit）步骤：</p>
+<ul>
+<li>在指令提交前，它可以将自己的结果 bypass 给后续指令，但不能执行写寄存器和内存等不可逆的操作。</li>
+<li>指令提交意味着该指令不再是投机执行的一部分，指令的效果生效。</li>
+</ul>
+<p><strong>允许指令乱序执行，但必须顺序提交</strong>。</p>
+</div>
+<p>为了实现提交步骤，需要添加 <strong>reorder buffer（ROB）</strong>用于<strong>存放完成执行但没有提交的指令的结果</strong>，并起到 bypass 的作用。</p>
+<h2 id="simd-gpu">第四章 向量、SIMD 和 GPU 体系结构中的数据级并行<a class="headerlink" href="#simd-gpu" title="Permanent link">¶</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p>SIMD 的三种变体：向量体系结构、多媒体 SIMD 指令集扩展和图形处理单元。</p>
+</div>
+<h3 id="41">4.1 向量体系结构<a class="headerlink" href="#41" title="Permanent link">¶</a></h3>
+<p>核心优化原理：单次向量访存操作产生的较长的延迟分散到多个元素上。</p>
+<p>这种设计的能量要求和复杂度不会增加太多，同时能提高简单标量处理器的性能。</p>
+<div class="admonition note">
+<p class="admonition-title">向量体系结构的组成部分</p>
+<p><a class="glightbox" data-desc-position="bottom" data-height="auto" data-type="image" data-width="auto" href="../caaqa.assets/4.1.png"><img alt="4.1.png" src="../caaqa.assets/4.1.png"/></a></p>
+<ul>
+<li>向量长度 VL、MVL<ul>
+<li>条带挖掘方法：当操作的向量长度超过 MVL 时，不能整除的部分设置 VL 处理一次，能整除的部分设置 MVL 进行处理。</li>
+</ul>
+</li>
+<li>其他：<h2 id="-vector-chaning-forwarding">- Vector Chaning：向量指令只需等待第一个元素，后续元素沿流水线顺畅移动。就是 Forwarding 的向量版本。<a class="headerlink" href="#-vector-chaning-forwarding" title="Permanent link">¶</a></h2>
+</li>
+</ul>
+</div>
+<div class="admonition note">
+<p class="admonition-title">最经典的向量问题：SAXPY 与 DAXPY</p>
+<p>SAXPY 指 Single-precision <span class="arithmatex">\(a \times X + Y\)</span>，后着指双精度。</p>
+</div>
+<h2 id="_7">第五章 线程级并行<a class="headerlink" href="#_7" title="Permanent link">¶</a></h2>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p>本章内容上课讲的组织与书上不同，相当于梳理了比较重要的内容，并穿插了附录 I 中的内容。因此本章按课上的内容组织整理。</p>
+</div>
+<h3 id="51">5.1 多处理器<a class="headerlink" href="#51" title="Permanent link">¶</a></h3>
+<ul>
+<li>费林分类法（Flynn's Taxonomy）对计算模式做分类：<ul>
+<li>SISD：单指令单数据流，传统的单处理器</li>
+<li>MISD：多指令单数据流，很少见</li>
+<li>SIMD：单指令多数据流，如向量处理器（第四章）</li>
+<li>MIMD：多指令多数据流，多处理器系统（本章内容）</li>
+</ul>
+</li>
+</ul>
+<p>多处理器架构主要根据主存的组织方式分类。关心的问题有两个：</p>
+<ul>
+<li>物理上是否集中：所有处理器对所有内存的访存延迟是否一致？</li>
+<li>逻辑上是否共享：所有处理器是否都能透明地访问所有内存？</li>
+</ul>
+<p>这两个维度是正交的。比如 DSM（Distributed Shared Memory）系统指物理上分布式内存，但逻辑上是共享内存。</p>
+<ul>
+<li>
+<p>物理上集中：SMP（Symmetric Multiprocessor）/UMA（Uniform Memory Access）。</p>
+<p>UMA 理论上很美好，但在现实中受到内存总线带宽的限制。随着系统规模的增加，延迟也会增加。因此 UMA 只适用于小规模 SMP，难以扩展。</p>
+</li>
+<li>
+<p>物理上分布：NUMA（Non-Uniform Memory Access）</p>
+<ul>
+<li>逻辑上共享：DSM（Distributed Shared Memory）。</li>
+<li>
+<p>逻辑上分布：由多个独立私有的地址空间组成，处理器不能直接访问远端内存。</p>
+<p>一般指集群，需要使用消息传递（Message Passing）进行通信。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>并行编程范式梳理如下：</p>
+<ul>
+<li>编程模型：<ul>
+<li>多道程序设计（Multiprogramming）：任务之间没有通信。</li>
+<li>共享内存空间（Shared Memory）</li>
+<li>消息传递（Message Passing）</li>
+<li>数据并行（Data Parallelism）：多个 agent 在多个数据集上并行，同时交换数据。</li>
+</ul>
+</li>
+<li>
+<p>通信抽象：</p>
+<ul>
+<li>
+<p>共享内存空间</p>
+<p>这种通信方式的重点是保证<strong>一致性</strong>。</p>
+</li>
+<li>
+<p>消息传递</p>
+<p>需要了解基本原理。消息传递本质上就是通过 Send 和 Receive 操作进行内存间的拷贝，各端提供自己的缓冲区（本地地址），并且相互同步。</p>
+<p>Send 需要指定本地缓存和远端需要接收的进程，Receive 需要指定本地缓存和远端发送的进程。所谓指定“进程”，实际上是给消息打 Tag，接收方根据 Tag 来接收消息。同步一般发生在 Send 完成、缓冲区释放、Receive 等待等时刻。</p>
+<p>直接内存访问（DMA）出现后实现了无阻塞的消息传递。</p>
+</li>
+</ul>
+<p>这两种通信机制的对比：</p>
+<table>
+<thead>
+<tr>
+<th>方面</th>
+<th>共享内存</th>
+<th>消息传递</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>特点</td>
+<td>地址空间共享</td>
+<td>地址空间独立，显式通信</td>
+</tr>
+<tr>
+<td>同步</td>
+<td>需要显式做同步</td>
+<td>消息传递收发时隐式同步</td>
+</tr>
+<tr>
+<td>编程难度</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>硬件实现难度</td>
+<td>高</td>
+<td>低</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+<p>本节最后总结了多处理器中的基础性问题：</p>
+<ol>
+<li>命名。可以联系第三章的 Tomasulo 算法，命名影响数据的存放、访问和传递。</li>
+<li>内存空间布局。涉及全局和分段式内存、物理和虚拟内存。</li>
+<li>同步。</li>
+<li>延迟和带宽。</li>
+</ol>
+<h3 id="52">5.2 一致性<a class="headerlink" href="#52" title="Permanent link">¶</a></h3>
+<p>在多处理器系统中，每个处理器有自己的缓存，可能产生不同处理器看到的同一内存位置的数据不一致的问题。</p>
+<p>我们将缓存的数据区分为两类：</p>
+<ul>
+<li>私有数据（private）：只有一个处理器使用。此时数据只在一个处理器的缓存中，不需要一致性。</li>
+<li>共享数据（shared）：多个处理器使用。此时多个处理器的缓存持有数据的副本，需要保证一致性。对于共享数据，缓存提供：<ul>
+<li>迁移（migration），即将数据移动到本地缓存，减小延迟。</li>
+<li>复制（replication），同时减小内存带宽，用于并行程序。</li>
+</ul>
+</li>
+</ul>
+<p>书本从两个方面描述共享内存系统的一致性：</p>
+<ul>
+<li>coherence：<ul>
+<li>程序顺序：处理器 P 向 X 写入值后读取，期间没有其他处理器写入 X，返回 P 写入的值。</li>
+<li>保证一致：处理器 P1 向 X 写入值后，处理器 P2 读取，期间没有对 X 的写入。只要写入和延迟的间隔足够，返回 P1 写入的值。</li>
+<li>对同一内存位置的写入操作是串行化（serialize）的，即被看见的顺序相同。</li>
+</ul>
+</li>
+<li>consistency：<ul>
+<li>定义一个写操作何时被看见。</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">理解 SMP 和 NUMA 的关系</p>
+<p>NUMA并不与SMP架构相冲突，反而可以看作是SMP架构的一种扩展。简单来说，NUMA是SMP架构的一个优化版本，适用于处理器数目非常多的系统。在NUMA中，多个处理器仍然对称工作（SMP），但每个处理器连接到自己本地的内存，而不是共享内存。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">一致性技术：Snooping 协议</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">一致性技术：目录协议（Directory Protocol）</p>
+<blockquote>
+<p>该技术在 5.4 节介绍。</p>
+<p>目录协议在 SMP 和 DSM 的实现不同。对于前者，只需要一个统一的目录；对于后者，需要多个目录，才能使系统容易扩展。</p>
+<p>我们只学习 DSM 上的目录协议。</p>
+</blockquote>
+<p><strong>目录（directory）</strong>：记录每个可能被缓存的块的状态。状态包括：哪些缓存持有块的副本，是否是脏的（dirty）等。</p>
+</div>
+<aside class="md-source-file">
+<span class="md-source-file__fact">
+<span class="md-icon" title="Last update">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
+</span>
+<span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="September 22, 2025 03:58:53 UTC">September 22, 2025</span>
+</span>
+</aside>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: Docker" class="md-footer__link md-footer__link--prev" href="../../%E5%AE%B9%E5%99%A8%E5%92%8C%E8%99%9A%E6%8B%9F%E5%8C%96/docker/">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</div>
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Previous
+              </span>
+<div class="md-ellipsis">
+                Docker
+              </div>
+</div>
+</a>
+<a aria-label="Next: Computer Systems: A Programmer's Perspective" class="md-footer__link md-footer__link--next" href="../csapp/">
+<div class="md-footer__title">
+<span class="md-footer__direction">
+                Next
+              </span>
+<div class="md-ellipsis">
+                Computer Systems: A Programmer's Perspective
+              </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"></path></svg>
+</div>
+</a>
+</nav>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+<a href="https://beian.miit.gov.cn/" target="_blank">浙ICP备2022036274号-1</a>
+</div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+<div class="md-social">
+<a class="md-social__link" href="https://bowling233.com" rel="noopener" target="_blank" title="bowling233.com">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.07 4.93C17.22 3 14.66 1.96 12 2c-2.66-.04-5.21 1-7.06 2.93C3 6.78 1.96 9.34 2 12c-.04 2.66 1 5.21 2.93 7.06C6.78 21 9.34 22.04 12 22c2.66.04 5.21-1 7.06-2.93C21 17.22 22.04 14.66 22 12c.04-2.66-1-5.22-2.93-7.07M17 12v6h-3.5v-5h-3v5H7v-6H5l7-7 7.5 7z"></path></svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../../..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "navigation.footer", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.tracking", "navigation.path", "navigation.top", "toc.follow", "content.action.edit", "search.suggest", "search.highlight", "search.share"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+<script src="../../../javascripts/mathjax.js"></script>
+<script src="https://polyfill.alicdn.com/polyfill.min.js?features=es6"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="https://unpkg.com/tablesort/dist/tablesort.min.js"></script>
+<script src="../../../javascripts/tablesort.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script><script src="https://viewer.diagrams.net/js/viewer-static.min.js"></script></body></html>
